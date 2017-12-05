@@ -2,7 +2,21 @@
   "name": "gherkin-testcafe",
   "version": "1.0.0",
   "author": "Wilhelm Behncke <behncke@sitegeist.de>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sitegeist/gherkin-testcafe"
+  },
   "license": "MIT",
+  "keywords": [
+    "gherkin",
+    "cucumber",
+    "testcafe",
+    "acceptance testing"
+  ],
+  "files": [
+    "./main.js",
+    "./src/**/*.js"
+  ],
   "bin": {
     "gherkin-testcafe": "./main.js"
   },
