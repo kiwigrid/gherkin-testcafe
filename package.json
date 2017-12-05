@@ -1,0 +1,16 @@
+{
+  "name": "gherkin-testcafe",
+  "version": "1.0.0",
+  "author": "Wilhelm Behncke <behncke@sitegeist.de>",
+  "license": "MIT",
+  "bin": {
+    "gherkin-testcafe": "./main.js"
+  },
+  "dependencies": {
+    "cucumber-expressions": "^5.0.7",
+    "gherkin": "^5.0.0",
+    "glob": "^7.1.2",
+    "testcafe": "^0.18.5",
+    "yargs": "^10.0.3"
+  }
+}
