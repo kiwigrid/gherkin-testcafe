@@ -66,7 +66,26 @@ gherkin-testcafe --specs ./tests/**/*.feature --steps ./tests/**/*.js --browers 
 
 ## Usage with docker
 
-*Not yet implemented*
+1. Start up the container for the test runner
+```sh
+docker run --name testrunner -v $(pwd)/specs:/test/specs sitegeist/gherkin-testcafe
+```
+
+2. Execute the tests
+```sh
+docker exec testrunner gherkin-testcafe --specs ./specs/**/*.feature --steps ./specs/**/*.js --browsers firefox
+```
+
+3. Clean up
+```sh
+docker kill testrunner
+docker rm testrunner
+```
+
+All parameters of the command line interface can be used, but the the list of browsers is limited to:
+
+- firefox
+- "chromium --no-sandbox"
 
 ## Writing step definitions
 
