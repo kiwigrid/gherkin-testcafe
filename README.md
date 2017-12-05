@@ -9,7 +9,7 @@
 *The development and the public-releases of this package is generously sponsored
 by our employer http://www.sitegeist.de.*
 
-This package is inspired by (helen-dikareva/testcafe-cucumber-demo)[https://github.com/helen-dikareva/testcafe-cucumber-demo].
+This package is inspired by [helen-dikareva/testcafe-cucumber-demo](https://github.com/helen-dikareva/testcafe-cucumber-demo).
 The test example for the google search is taken from there.
 
 ### Support
