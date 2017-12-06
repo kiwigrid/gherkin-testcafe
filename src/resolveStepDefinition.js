@@ -13,6 +13,7 @@ class StepDefinitionRegistry {
 	constructor() {
 		this.definitions = {};
 		this.runtime = {};
+		this.latestType = '';
 
 		['given', 'when', 'then'].forEach(keyword => {
 			this.definitions[keyword] = [];
@@ -26,7 +27,12 @@ class StepDefinitionRegistry {
 	}
 
 	resolve(type, text) {
+		if (type === 'and') {
+			type = this.latestType;
+		}
+
 		if (this.definitions[type]) {
+			this.latestType = type;
 			return this.definitions[type].filter(({expression}) => expression.match(text))[0]
 		}
 	}
@@ -50,7 +56,7 @@ stepDefinitionsPaths.forEach(stepDefinitionsPath => {
 // Given a step from a gherkin AST, this will find the corresponding step definition or
 // return an empty object, if there is none
 //
-module.exports = function resolveStepDefinition(step) {
+module.exports = function resolveStepDefinition(step, predecessor) {
 	const stepDefinition = stepDefinitionRegistry.resolve(step.keyword.toLowerCase().trim(), step.text);
 
 	return stepDefinition || {};
