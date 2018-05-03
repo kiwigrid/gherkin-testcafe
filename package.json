@@ -20,8 +20,11 @@
   "bin": {
     "gherkin-testcafe": "./main.js"
   },
+  "main": "src/createTestcafeGherkin.js",
   "dependencies": {
+    "async-exit-hook": "^2.0.1",
     "cucumber-expressions": "^5.0.7",
+    "endpoint-utils": "^1.0.2",
     "gherkin": "^5.0.0",
     "glob": "^7.1.2",
     "testcafe": "^0.18.5",

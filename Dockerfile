@@ -4,9 +4,9 @@
 FROM node:8-alpine as builder
 
 COPY ./package.json /package.json
-COPY ./yarn.lock /yarn.lock
+COPY ./package-lock.json /package-lock.json
 
-RUN yarn install
+RUN npm install
 
 #
 # Mostly taken from https://github.com/DevExpress/testcafe/blob/master/docker/Dockerfile

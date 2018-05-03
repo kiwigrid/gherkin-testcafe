@@ -87,6 +87,52 @@ All parameters of the command line interface can be used, but the the list of br
 - firefox
 - "chromium --no-sandbox"
 
+## Programming Interface
+
+Similarly to testcafe itself, this extension can be use a programming interface for fine-grained control over the test run.
+Most parts of the workflow stay the same.
+You only not import `testcafe`, you import `gherkin-testcafe`:
+
+```diff
+- const createTestCafe = require('testcafe');
++ const createTestCafe = require('gherkin-testcafe');
+```
+
+And for the runner instance, you do not add files (via the `src` method), you add `specs` and `steps`:
+
+```diff
+  runner
+-     .src('tests/myFixture.js')
++     .specs('./specs/**/*.feature')
++     .steps('./specs/**/*.js')
+      .browsers([remoteConnection, 'chrome'])
+      .reporter('json')
+      .run()
+      .then(failedCount => {
+          /* ... */
+      })
+      .catch(error => {
+          /* ... */
+      });
+```
+
+You can add multiple spec and step paths by either passing an array to `specs` and `steps` or by calling these methods multiple times.
+
+```js
+runner
+    .specs(['./one-path/**/*.feature', './other-path/**/*.feature'])
+    
+// or
+
+runner
+    .specs('./one-path/**/*.feature')
+    .specs('./other-path/**/*.feature')
+```  
+  
+All functionality of the main testcafe programming interface is proxied to this implementation.
+          
+Refer to the [testcafe programming interface help page](https://devexpress.github.io/testcafe/documentation/using-testcafe/programming-interface/) for more information about other parameters.
+
 ## Writing step definitions
 
 With the `--steps` parameter you can specify where to find your step definitions. These are contained in a file of the following form:
