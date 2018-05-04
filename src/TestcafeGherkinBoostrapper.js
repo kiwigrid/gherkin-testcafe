@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require("fs");
 const { Parser } = require("gherkin");
 const TestcafeBootstrapper = require("testcafe/lib/runner/bootstrapper");
 const Fixture = require("testcafe/lib/api/structure/fixture");
@@ -31,12 +31,11 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
 
       gherkinAst.feature.children.forEach(scenario => {
         const test = new Test(testFile);
-        test(`Scenario: ${scenario.name}`, t =>
-          Promise.all(
-            scenario.steps.map(step =>
-              this._resolveAndRunStepDefinition(t, step)
-            )
-          )).page('about:blank');
+        test(`Scenario: ${scenario.name}`, async t => {
+          for (const step of scenario.step) {
+            await this._resolveAndRunStepDefinition(t, step);
+          }
+        }).page("about:blank");
       });
 
       tests = [...tests, ...testFile.collectedTests];
@@ -70,4 +69,4 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       console.warn(`Step implementation missing for: ${step.text}`);
     }
   }
-}
+};
