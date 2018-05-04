@@ -1,7 +1,7 @@
 const glob = require("glob");
 const path = require("path");
 const TestcafeRunner = require("testcafe/lib/runner/index");
-const TestcafeGherkinBootstrapper = require('./TestcafeGherkinBoostrapper');
+const TestcafeGherkinBootstrapper = require("./TestcafeGherkinBoostrapper");
 
 module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
   constructor(proxy, browserConnectionGateway) {
@@ -28,13 +28,7 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
   specs(specs) {
     this.bootstrapper.specFiles = [
       ...this.bootstrapper.specFiles,
-      ...(Array.isArray(specs) ? specs : [specs])
-        .map(specPath => glob.sync(specPath))
-        .reduce((accumulator, resolvedPaths) => [
-          ...accumulator,
-          ...resolvedPaths
-        ])
-        .map(specPath => path.join(process.cwd(), specPath))
+      ...this._loadPaths(specs)
     ];
 
     return this;
@@ -47,18 +41,21 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
    * @returns {TestcafeGherkinRunner}
    */
   steps(steps) {
-    const resolvedStepPaths = (Array.isArray(steps) ? steps : [steps])
-      .map(stepPath => glob.sync(stepPath))
+    this.bootstrapper.stepFiles = [
+      ...this.bootstrapper.stepFiles,
+      ...this._loadPaths(steps)
+    ];
+
+    return this;
+  }
+
+  _loadPaths(paths) {
+    return (Array.isArray(paths) ? paths : [paths])
+      .map(path => glob.sync(path))
       .reduce((accumulator, resolvedPaths) => [
         ...accumulator,
         ...resolvedPaths
       ])
-      .map(specPath => path.join(process.cwd(), specPath));
-
-    resolvedStepPaths.forEach(stepPath => {
-      this.bootstrapper.stepDefinitionRegistry.load(require(stepPath));
-    });
-
-    return this;
+      .map(resolvedPath => path.join(process.cwd(), resolvedPath));
   }
-}
+};

@@ -135,25 +135,21 @@ Refer to the [testcafe programming interface help page](https://devexpress.githu
 
 ## Writing step definitions
 
-With the `--steps` parameter you can specify where to find your step definitions. These are contained in a file of the following form:
+With the `--steps` parameter you can specify where to find your step definitions.
+Step definitions are written with [cucumber-js](https://github.com/cucumber/cucumber-js) with a little tweak of the input parameters.
 
 ```js
-module.exports = function defineSteps({given, when, then}) {
-	given(`I have a step definition with parameter {string}`, (t, myParameter) => {
-		// Test implementation here
-	});
-}
+const { Given } = require('cucumber');
+
+Given(/^I have a step definition with parameter (.+) and another parameter (.+)$/, async (t, param1, param2) => {
+    // Test implementation here
+});
 ```
 
-`given`, `when` and `then` refer to their gherkin counterparts. Each of these functions takes two parameters.
+Refer to the [API reference](https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/api_reference.md) for more information on how to set up step definitions.
 
-The first one expects a parameterized step expression. You'll find more on that in the [cucumber-expressions Documentation](https://github.com/cucumber/cucumber/tree/master/cucumber-expressions#cucumber-expressions).
-
-The second one expects a function (that is allowed to be be `async`), which executes the actual test. That function
-will get the testcafe test controller as its first parameter (`t` in the example). With that you can use the entirety
-of test cafes [Test API](http://devexpress.github.io/testcafe/documentation/test-api/).
-
-All subsequent parameters for the test function are resolved from the given step expression.
+In contrast to `cucumber-js`, the first parameter of the step implementation is testcafe's test controller.
+All other arguments will be the values of the regular expression's captured parentheses.
 
 ## License
 

@@ -1,3 +1,8 @@
+// require stack-chain here to prevent testcafe from loading stack-chain
+// Same error as
+// https://github.com/DevExpress/testcafe/issues/2166
+require('stack-chain');
+
 const setupExitHook = require("async-exit-hook");
 const endpointUtils = require("endpoint-utils");
 const { GeneralError } = require("testcafe/lib/errors/runtime");

@@ -5,18 +5,21 @@ const Fixture = require("testcafe/lib/api/structure/fixture");
 const Test = require("testcafe/lib/api/structure/test");
 const { GeneralError } = require("testcafe/lib/errors/runtime");
 const MESSAGE = require("testcafe/lib/errors/runtime/message");
-const StepDefinitionRegistry = require("./StepDefinitionRegistry");
+const { supportCodeLibraryBuilder } = require("cucumber");
 
 module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper {
   constructor(...args) {
     super(...args);
 
-    this.stepDefinitionRegistry = new StepDefinitionRegistry();
-
+    this.stepFiles = [];
     this.specFiles = [];
+
+    this.stepDefinitions = [];
   }
 
   async _getTests() {
+    this._loadStepDefinitions();
+
     let tests = [];
 
     this.specFiles.forEach(specFile => {
@@ -32,7 +35,7 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       gherkinAst.feature.children.forEach(scenario => {
         const test = new Test(testFile);
         test(`Scenario: ${scenario.name}`, async t => {
-          for (const step of scenario.step) {
+          for (const step of scenario.steps) {
             await this._resolveAndRunStepDefinition(t, step);
           }
         }).page("about:blank");
@@ -54,19 +57,24 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     return tests;
   }
 
-  async _resolveAndRunStepDefinition(testController, step) {
-    const { expression, implementation } = this.stepDefinitionRegistry.resolve(
-      step.keyword.toLowerCase().trim(),
-      step.text
-    );
+  _loadStepDefinitions() {
+    supportCodeLibraryBuilder.reset(process.cwd());
+    this.stepFiles.forEach((stepFile) => {
+      require(stepFile);
+    });
 
-    if (expression && implementation) {
-      return implementation(
-        testController,
-        ...expression.match(step.text).map(match => match.getValue())
-      );
-    } else {
-      throw new Error(`Step implementation missing for: ${step.text}`);
+    this.stepDefinitions = supportCodeLibraryBuilder.finalize().stepDefinitions;
+  }
+
+  async _resolveAndRunStepDefinition(testController, step) {
+    for (const stepDefinition of this.stepDefinitions) {
+      const match = stepDefinition.pattern.exec(step.text);
+
+      if (match) {
+        return stepDefinition.code(testController, ...match.slice(1));
+      }
     }
+
+    throw new Error(`Step implementation missing for: ${step.text}`);
   }
 };
