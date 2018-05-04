@@ -66,7 +66,7 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
         ...expression.match(step.text).map(match => match.getValue())
       );
     } else {
-      console.warn(`Step implementation missing for: ${step.text}`);
+      throw new Error(`Step implementation missing for: ${step.text}`);
     }
   }
 };
