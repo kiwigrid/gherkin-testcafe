@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { Parser } = require("gherkin");
+const { Parser, Compiler } = require("gherkin");
 const TestcafeBootstrapper = require("testcafe/lib/runner/bootstrapper");
 const Fixture = require("testcafe/lib/api/structure/fixture");
 const Test = require("testcafe/lib/api/structure/test");
@@ -21,18 +21,21 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     this._loadStepDefinitions();
 
     let tests = [];
+    const parser = new Parser();
+    const compiler = new Compiler();
 
     this.specFiles.forEach(specFile => {
-      const gherkinAst = new Parser().parse(
+      const gherkinAst = parser.parse(
         fs.readFileSync(specFile).toString()
       );
+      const scenarios = compiler.compile(gherkinAst);
 
       const testFile = { filename: specFile, collectedTests: [] };
       const fixture = new Fixture(testFile);
 
       fixture(`Feature: ${gherkinAst.feature.name}`);
 
-      gherkinAst.feature.children.forEach(scenario => {
+      scenarios.forEach(scenario => {
         const test = new Test(testFile);
         test(`Scenario: ${scenario.name}`, async t => {
           for (const step of scenario.steps) {
