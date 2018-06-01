@@ -32,5 +32,8 @@
   },
   "peerDependencies": {
     "cucumber": "^4.2.1"
+  },
+  "devDependencies": {
+    "cucumber": "^4.2.1"
   }
 }
