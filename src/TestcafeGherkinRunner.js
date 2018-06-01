@@ -1,7 +1,7 @@
 const glob = require("glob");
 const path = require("path");
 const TestcafeRunner = require("testcafe/lib/runner/index");
-const TestcafeGherkinBootstrapper = require("./TestcafeGherkinBoostrapper");
+const TestcafeGherkinBootstrapper = require("./TestcafeGherkinBootstrapper");
 
 module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
   constructor(proxy, browserConnectionGateway) {
