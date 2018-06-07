@@ -6,6 +6,7 @@ const Test = require("testcafe/lib/api/structure/test");
 const { GeneralError } = require("testcafe/lib/errors/runtime");
 const MESSAGE = require("testcafe/lib/errors/runtime/message");
 const { supportCodeLibraryBuilder } = require("cucumber");
+const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 
 module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper {
   constructor(...args) {
@@ -69,15 +70,23 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     this.stepDefinitions = supportCodeLibraryBuilder.finalize().stepDefinitions;
   }
 
-  async _resolveAndRunStepDefinition(testController, step) {
+  _resolveAndRunStepDefinition(testController, step) {
     for (const stepDefinition of this.stepDefinitions) {
       const match = stepDefinition.pattern.exec(step.text);
 
       if (match) {
-        return stepDefinition.code(testController, ...match.slice(1));
+        return this._runStep(stepDefinition.code, testController, match.slice(1));
       }
     }
 
     throw new Error(`Step implementation missing for: ${step.text}`);
+  }
+
+  _runStep(step, testController, parameters) {
+    const markedFn = testRunTracker.addTrackingMarkerToFunction(testController.testRun.id, step);
+
+    testRunTracker.ensureEnabled();
+
+    return markedFn(testController, ...parameters);
   }
 };
