@@ -1,9 +1,13 @@
-const { Given, When, Then } = require('cucumber');
+const { Given, When, Then, Before } = require('cucumber');
 const { Selector: NativeSelector } = require('testcafe');
 
 const Selector = (input, t) => {
 	return NativeSelector(input).with({ boundTestRun: t });
 };
+
+Before('@googleHook', async () => {
+    console.log('Running Google e2e test.');
+});
 
 Given(/^I am open Google's search page$/, async t => {
 	await t.navigateTo('http://www.google.com');
@@ -23,4 +27,5 @@ Then(/I should see that the first Google's result is "(.+)"/, async (t, expected
 	const firstLink = Selector('#rso', t).find('a');
 
 	await t.expect(firstLink.innerText).contains(expectedSearchResult);
+	console.log('testing stuff');
 });

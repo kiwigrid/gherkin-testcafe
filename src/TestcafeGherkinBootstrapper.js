@@ -16,6 +16,11 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     this.specFiles = [];
 
     this.stepDefinitions = [];
+
+    this.afterHooks = [];
+    this.beforeHooks = [];
+    this.beforeAllHooks = [];
+    this.afterAllHooks = [];
   }
 
   async _getTests() {
@@ -39,8 +44,23 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       scenarios.forEach(scenario => {
         const test = new Test(testFile);
         test(`Scenario: ${scenario.name}`, async t => {
-          for (const step of scenario.steps) {
-            await this._resolveAndRunStepDefinition(t, step);
+          let error;
+          await this._runHooks(t, this.beforeAllHooks);
+          await this._runHooks(t, this._findHook(scenario, this.beforeHooks));
+
+          try {
+            for (const step of scenario.steps) {
+              await this._resolveAndRunStepDefinition(t, step);
+            }
+          } catch (e) {
+            error = e;
+          }
+
+          await this._runHooks(t, this._findHook(scenario, this.afterHooks));
+          await this._runHooks(t, this.afterAllHooks);
+
+          if (error) {
+            throw error;
           }
         }).page("about:blank");
       });
@@ -67,7 +87,13 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       require(stepFile);
     });
 
-    this.stepDefinitions = supportCodeLibraryBuilder.finalize().stepDefinitions;
+    const finalizedStepDefinitions = supportCodeLibraryBuilder.finalize();
+    this.afterHooks = finalizedStepDefinitions.afterTestCaseHookDefinitions;
+    this.afterAllHooks = finalizedStepDefinitions.afterTestRunHookDefinitions;
+    this.beforeHooks = finalizedStepDefinitions.beforeTestCaseHookDefinitions;
+    this.beforeAllHooks = finalizedStepDefinitions.beforeTestRunHookDefinitions;
+
+    this.stepDefinitions = finalizedStepDefinitions.stepDefinitions;
   }
 
   _resolveAndRunStepDefinition(testController, step) {
@@ -88,5 +114,27 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     testRunTracker.ensureEnabled();
 
     return markedFn(testController, ...parameters);
+  }
+
+
+  _findHook(scenario, hooks) {
+    const matchedHooks = [];
+
+    hooks.forEach((hook) => {
+      scenario.tags.forEach((tag) => {
+        if (tag.name === hook.options.tags) {
+          matchedHooks.push(hook);
+          return false;
+        }
+      })
+    });
+
+    return matchedHooks;
+  }
+
+  async _runHooks(testController, hooks) {
+    for (const hook of hooks) {
+      await this._runStep(hook.code, testController, [])
+    }
   }
 };

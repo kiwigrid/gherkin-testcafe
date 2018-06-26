@@ -151,6 +151,10 @@ Refer to the [API reference](https://github.com/cucumber/cucumber-js/blob/master
 In contrast to `cucumber-js`, the first parameter of the step implementation is testcafe's test controller.
 All other arguments will be the values of the regular expression's captured parentheses.
 
+## Hooks
+If you want to use hooks, please refer to the [documentation](https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/hooks.md) of the Cucumber-js. Also, please note that multiple tags per hook definition are not supported.
+
+
 ## License
 
 see [LICENSE.md](./LICENSE.md)
