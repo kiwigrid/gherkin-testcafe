@@ -27,7 +27,7 @@
     "gherkin": "^5.0.0",
     "glob": "^7.1.2",
     "stack-chain": "^2.0.0",
-    "testcafe": "^0.19.2",
+    "testcafe": "^0.20.0",
     "yargs": "^10.0.3"
   },
   "peerDependencies": {
