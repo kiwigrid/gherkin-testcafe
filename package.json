@@ -27,13 +27,14 @@
     "gherkin": "^5.0.0",
     "glob": "^7.1.2",
     "stack-chain": "^2.0.0",
-    "testcafe": "^0.20.0",
     "yargs": "^10.0.3"
   },
   "peerDependencies": {
-    "cucumber": "^4.2.1"
+    "cucumber": "^4.2.1",
+    "testcafe": "^0.20.0"
   },
   "devDependencies": {
-    "cucumber": "^4.2.1"
+    "cucumber": "^4.2.1",
+    "testcafe": "^0.20.0"
   }
 }
