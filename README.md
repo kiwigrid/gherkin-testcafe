@@ -2,12 +2,10 @@
 
 > Run testcafe tests with gherkin syntax
 
-### Authors & Sponsors
+### Authors
 
-* Wilhelm Behncke - behncke@sitegeist.de
-
-*The development and the public-releases of this package is generously sponsored
-by our employer http://www.sitegeist.de.*
+* Wilhelm Behncke - behncke@sitegeist.de (original author)
+* Lukas Kullmann
 
 This package is inspired by [helen-dikareva/testcafe-cucumber-demo](https://github.com/helen-dikareva/testcafe-cucumber-demo).
 The test example for the google search is taken from there.
@@ -25,9 +23,11 @@ This tool provides a setup in which gherkin `*.feature` specs can be used to run
 
 ## What does this do?
 
-The tool itself has just a small footprint to glue testcafe and gherkin together.
+The tool glues testcafe and gherkin together.
 
 It uses testcafe as the testrunner and constructs the `fixture` and `test` calls from gherkin sources during runtime.
+
+Since this tool digs deep into the internals of testcafe to run the feature files, it should only be used together with the testcafe version specified in the peer dependencies of this package.
 
 To interpret `*.feature` files written in gherkin, it uses the `gherkin` package from npm. To allow custom step definitions it uses the `cucumber-expressions` package from npm. Both of those packages are provided by the cucumber project.
 
