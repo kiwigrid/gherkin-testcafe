@@ -32,18 +32,22 @@ You can use shorthands:
     
     gherkin-testcafe -d tests/**/*.js -s tests/**/*.feature -b firefox
 
-Out of [TestCafé's CLI options](https://devexpress.github.io/testcafe/documentation/using-testcafe/command-line-interface.html#options) only a very limited amount are supported for this package.
+Out of [TestCafé's CLI options](https://devexpress.github.io/testcafe/documentation/using-testcafe/command-line-interface.html#options) a limited amount are supported for this package.
+
 The following options are supported:
 
-| Option | Shorthand | Description |
-| --- | ---| --- |
-| specs | s | A space separated list of feature files to run.We use [glob](https://github.com/isaacs/node-glob) to match paths. |
-| steps | d | A space separated list of file paths to load the step definitions from. We use [glob](https://github.com/isaacs/node-glob) to match paths. |
-| browsers | b | A space separated list of browsers to run the tests in. |
-| ports | p | Optional: A space separated list of ports for TestCafé to perform testing on. |
-
-Please note, that you have to provide `steps`, `specs` and `browsers` for tests to run. 
-`ports` is optionals.
+| Option | Shorthand | Required |Description | Default
+| --- | ---| --- | --- | --- | 
+| specs | s | **Required** | A space separated list of feature files to run.We use [glob](https://github.com/isaacs/node-glob) to match paths. | N.A. |
+| steps | d | **Required** | A space separated list of file paths to load the step definitions from. We use [glob](https://github.com/isaacs/node-glob) to match paths. | N.A. |
+| browsers | b | Optional | A space separated list of browsers to run the tests in. | chrome:headless |
+| ports | p | Optional | A space separated list of ports for TestCafé to perform testing on. | 1337,1338 |
+| skipJsErrors | e | Optional | Make tests not fail when a JS error happens on a page | false |
+| disablePageReloads | N.A. | Optional | Disable page reloads between tests | false |
+| quarantineMode | q | Optional | Enable quarantine mode | false |
+| debugMode | N.A. | Optional | Execute test steps one by one pausing the test after each step | false |
+| debugOnFail | N.A. | Optional | Pause the test if it fails | false |
+| speed | N.A. | Optional | Set the speed of test execution (0.01 ... 1) | 1 |
 
 ## Programming interface
 
