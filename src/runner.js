@@ -4,6 +4,8 @@ module.exports = async ({
   hostname = "localhost",
   browsers,
   ports,
+  specs,
+  steps,
   skipJsErrors,
   disablePageReloads,
   quarantineMode,
