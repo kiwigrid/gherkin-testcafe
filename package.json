@@ -24,6 +24,10 @@
     "gherkin-testcafe": "./main.js"
   },
   "main": "src/createTestcafeGherkin.js",
+  "scripts": {
+    "prettier": "prettier --write 'src/**/*.{js,yaml,yml,json,md}'",
+    "prettier-check": "prettier --list-different 'src/**/*.{js,yaml,yml,json,md}'"
+  },
   "dependencies": {
     "async-exit-hook": "^2.0.1",
     "endpoint-utils": "^1.0.2",
@@ -38,6 +42,7 @@
   },
   "devDependencies": {
     "cucumber": "^4.2.1",
+    "prettier": "^1.14.2",
     "testcafe": "^0.20.0"
   }
 }

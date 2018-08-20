@@ -1,11 +1,11 @@
-const fs = require("fs");
-const { Parser, Compiler } = require("gherkin");
-const TestcafeBootstrapper = require("testcafe/lib/runner/bootstrapper");
-const Fixture = require("testcafe/lib/api/structure/fixture");
-const Test = require("testcafe/lib/api/structure/test");
-const { GeneralError } = require("testcafe/lib/errors/runtime");
-const MESSAGE = require("testcafe/lib/errors/runtime/message");
-const { supportCodeLibraryBuilder } = require("cucumber");
+const fs = require('fs');
+const { Parser, Compiler } = require('gherkin');
+const TestcafeBootstrapper = require('testcafe/lib/runner/bootstrapper');
+const Fixture = require('testcafe/lib/api/structure/fixture');
+const Test = require('testcafe/lib/api/structure/test');
+const { GeneralError } = require('testcafe/lib/errors/runtime');
+const MESSAGE = require('testcafe/lib/errors/runtime/message');
+const { supportCodeLibraryBuilder } = require('cucumber');
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 
 module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper {
@@ -31,9 +31,7 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     const compiler = new Compiler();
 
     this.specFiles.forEach(specFile => {
-      const gherkinAst = parser.parse(
-        fs.readFileSync(specFile).toString()
-      );
+      const gherkinAst = parser.parse(fs.readFileSync(specFile).toString());
       const scenarios = compiler.compile(gherkinAst);
 
       const testFile = { filename: specFile, collectedTests: [] };
@@ -62,16 +60,14 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
           if (error) {
             throw error;
           }
-        }).page("about:blank");
+        }).page('about:blank');
       });
 
       tests = [...tests, ...testFile.collectedTests];
     });
 
     if (this.filter) {
-      tests = tests.filter(test =>
-        this.filter(test.name, test.fixture.name, test.fixture.path)
-      );
+      tests = tests.filter(test => this.filter(test.name, test.fixture.name, test.fixture.path));
     }
 
     if (!tests.length) {
@@ -83,7 +79,7 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
 
   _loadStepDefinitions() {
     supportCodeLibraryBuilder.reset(process.cwd());
-    this.stepFiles.forEach((stepFile) => {
+    this.stepFiles.forEach(stepFile => {
       require(stepFile);
     });
 
@@ -116,17 +112,16 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     return markedFn(testController, ...parameters);
   }
 
-
   _findHook(scenario, hooks) {
     const matchedHooks = [];
 
-    hooks.forEach((hook) => {
-      scenario.tags.forEach((tag) => {
+    hooks.forEach(hook => {
+      scenario.tags.forEach(tag => {
         if (tag.name === hook.options.tags) {
           matchedHooks.push(hook);
           return false;
         }
-      })
+      });
     });
 
     return matchedHooks;
@@ -134,7 +129,7 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
 
   async _runHooks(testController, hooks) {
     for (const hook of hooks) {
-      await this._runStep(hook.code, testController, [])
+      await this._runStep(hook.code, testController, []);
     }
   }
 };
