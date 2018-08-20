@@ -33,20 +33,24 @@ module.exports = require('yargs')
         default: false,
         describe: 'Disable page reloads between tests',
         type: 'boolean'
-    }).option('quarantineMode', {
+    })
+    .option('quarantineMode', {
         alias: 'q',
         default: false,
         describe: 'Enable the quarantine mode',
         type: 'boolean'
-    }).option('debugMode', {
+    })
+    .option('debugMode', {
         default: false,
         describe: 'Execute test steps one by one pausing the test after each step',
         type: 'boolean'
-    }).option('debugOnFail', {
+    })
+    .option('debugOnFail', {
         default: false,
-        describe: 'Pause the test if it fails',
+        describe: 'Enter debug mode when the test fails',
         type: 'boolean'
-    }).option('speed', {
+    })
+    .option('speed', {
         default: 1,
         describe: 'Set the speed of test execution (0.01 ... 1)',
         type: 'number'

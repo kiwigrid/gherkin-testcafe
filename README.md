@@ -46,7 +46,7 @@ The following options are supported:
 | disablePageReloads | N.A. | Optional | Disable page reloads between tests | false |
 | quarantineMode | q | Optional | Enable quarantine mode | false |
 | debugMode | N.A. | Optional | Execute test steps one by one pausing the test after each step | false |
-| debugOnFail | N.A. | Optional | Pause the test if it fails | false |
+| debugOnFail | N.A. | Optional | Enter debug mode when the test fails | false |
 | speed | N.A. | Optional | Set the speed of test execution (0.01 ... 1) | 1 |
 
 ## Programming interface
