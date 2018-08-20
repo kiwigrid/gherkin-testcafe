@@ -1,7 +1,7 @@
-const createTestCafe = require("./createTestcafeGherkin");
+const createTestCafe = require('./createTestcafeGherkin');
 
 module.exports = async ({
-  hostname = "localhost",
+  hostname = 'localhost',
   browsers,
   ports,
   specs,
@@ -21,7 +21,7 @@ module.exports = async ({
       .browsers(browsers)
       .specs(specs)
       .steps(steps)
-      .run({skipJsErrors, disablePageReloads, quarantineMode, debugMode, debugOnFail, speed});
+      .run({ skipJsErrors, disablePageReloads, quarantineMode, debugMode, debugOnFail, speed });
 
     process.exit(failedCount && 1);
   } catch (error) {

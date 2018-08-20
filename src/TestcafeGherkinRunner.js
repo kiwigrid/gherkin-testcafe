@@ -1,22 +1,20 @@
-const glob = require("glob");
-const path = require("path");
-const TestcafeRunner = require("testcafe/lib/runner/index");
-const TestcafeGherkinBootstrapper = require("./TestcafeGherkinBootstrapper");
+const glob = require('glob');
+const path = require('path');
+const TestcafeRunner = require('testcafe/lib/runner/index');
+const TestcafeGherkinBootstrapper = require('./TestcafeGherkinBootstrapper');
 
 module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
   constructor(proxy, browserConnectionGateway) {
     super(proxy, browserConnectionGateway);
 
-    this.bootstrapper = new TestcafeGherkinBootstrapper(
-      browserConnectionGateway
-    );
+    this.bootstrapper = new TestcafeGherkinBootstrapper(browserConnectionGateway);
   }
 
   /**
    * @override
    */
   src() {
-    throw new Error("Do not use src method, use spec and step methods instead");
+    throw new Error('Do not use src method, use spec and step methods instead');
   }
 
   /**
@@ -26,10 +24,7 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
    * @returns {TestcafeGherkinRunner}
    */
   specs(specs) {
-    this.bootstrapper.specFiles = [
-      ...this.bootstrapper.specFiles,
-      ...this._loadPaths(specs)
-    ];
+    this.bootstrapper.specFiles = [...this.bootstrapper.specFiles, ...this._loadPaths(specs)];
 
     return this;
   }
@@ -41,10 +36,7 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
    * @returns {TestcafeGherkinRunner}
    */
   steps(steps) {
-    this.bootstrapper.stepFiles = [
-      ...this.bootstrapper.stepFiles,
-      ...this._loadPaths(steps)
-    ];
+    this.bootstrapper.stepFiles = [...this.bootstrapper.stepFiles, ...this._loadPaths(steps)];
 
     return this;
   }
@@ -52,10 +44,7 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
   _loadPaths(paths) {
     return (Array.isArray(paths) ? paths : [paths])
       .map(path => glob.sync(path))
-      .reduce((accumulator, resolvedPaths) => [
-        ...accumulator,
-        ...resolvedPaths
-      ])
+      .reduce((accumulator, resolvedPaths) => [...accumulator, ...resolvedPaths])
       .map(resolvedPath => path.join(process.cwd(), resolvedPath));
   }
 };
