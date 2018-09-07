@@ -54,4 +54,10 @@ module.exports = require('yargs')
     default: 1,
     describe: 'Set the speed of test execution (0.01 ... 1)',
     type: 'number'
+  })
+  .option('concurrency', {
+    alias: 'c',
+    default: 1,
+    describe: 'Specifies that tests should run concurrently',
+    type: 'number'
   });
