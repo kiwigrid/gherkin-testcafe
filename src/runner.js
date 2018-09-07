@@ -11,7 +11,8 @@ module.exports = async ({
   quarantineMode,
   debugMode,
   debugOnFail,
-  speed
+  speed,
+  concurrency
 }) => {
   const testcafe = await createTestCafe(hostname, ...ports.slice(0, 2));
   const runner = testcafe.createRunner();
@@ -21,6 +22,7 @@ module.exports = async ({
       .browsers(browsers)
       .specs(specs)
       .steps(steps)
+      .concurrency(concurrency)
       .run({ skipJsErrors, disablePageReloads, quarantineMode, debugMode, debugOnFail, speed });
 
     process.exit(failedCount && 1);
