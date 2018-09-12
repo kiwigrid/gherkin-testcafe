@@ -40,6 +40,10 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       fixture(`Feature: ${gherkinAst.feature.name}`);
 
       scenarios.forEach(scenario => {
+        if (!this._shouldRunScenario(scenario)) {
+          return;
+        }
+
         const test = new Test(testFile);
         test(`Scenario: ${scenario.name}`, async t => {
           let error;
@@ -131,5 +135,35 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     for (const hook of hooks) {
       await this._runStep(hook.code, testController, []);
     }
+  }
+
+  _shouldRunScenario(scenario) {
+    const tagArgs = this._getArgTags();
+
+    if (!tagArgs) {
+      return true;
+    }
+
+    return this._scenarioHasAnyOfTheTags(scenario, tagArgs);
+  }
+
+  _getArgTags() {
+    let argTags = process.env.npm_config_tags;
+
+    if (!argTags) {
+      return null;
+    }
+
+    return argTags.replace(/[, ]+/g, ' ').trim().split(' ');
+  }
+
+  _scenarioHasAnyOfTheTags(scenario, tags) {
+    for (let i = 0; i < scenario.tags.length; i++) {
+      if (tags.indexOf(scenario.tags[i].name) > -1) {
+        return true;
+      }
+    }
+
+    return false;
   }
 };
