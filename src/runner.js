@@ -12,10 +12,15 @@ module.exports = async ({
   debugMode,
   debugOnFail,
   speed,
-  concurrency
+  concurrency,
+  app,
+  appInitDelay,
+  tags
 }) => {
   const testcafe = await createTestCafe(hostname, ...ports.slice(0, 2));
   const runner = testcafe.createRunner();
+
+  console.log("Running with browsers", browsers, "tags", tags, "concurrency", concurrency);
 
   try {
     const failedCount = await runner
@@ -23,6 +28,8 @@ module.exports = async ({
       .specs(specs)
       .steps(steps)
       .concurrency(concurrency)
+      .startApp(app, appInitDelay)
+      .tags(tags)
       .run({ skipJsErrors, disablePageReloads, quarantineMode, debugMode, debugOnFail, speed });
 
     process.exit(failedCount && 1);

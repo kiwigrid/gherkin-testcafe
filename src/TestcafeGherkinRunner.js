@@ -41,6 +41,12 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
     return this;
   }
 
+  tags(tags) {
+    this.bootstrapper.tags = [...this.bootstrapper.tags, ...tags];
+
+    return this;
+  }
+
   _loadPaths(paths) {
     return (Array.isArray(paths) ? paths : [paths])
       .map(path => glob.sync(path))
