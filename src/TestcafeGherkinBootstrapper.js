@@ -21,6 +21,8 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     this.beforeHooks = [];
     this.beforeAllHooks = [];
     this.afterAllHooks = [];
+
+    this.tags = [];
   }
 
   async _getTests() {
@@ -138,23 +140,11 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
   }
 
   _shouldRunScenario(scenario) {
-    const tagArgs = this._getArgTags();
-
-    if (!tagArgs) {
+    if (!this.tags || !this.tags.length) {
       return true;
     }
 
-    return this._scenarioHasAnyOfTheTags(scenario, tagArgs);
-  }
-
-  _getArgTags() {
-    let argTags = process.env.npm_config_tags;
-
-    if (!argTags) {
-      return null;
-    }
-
-    return argTags.replace(/[, ]+/g, ' ').trim().split(' ');
+    return this._scenarioHasAnyOfTheTags(scenario, this.tags);
   }
 
   _scenarioHasAnyOfTheTags(scenario, tags) {

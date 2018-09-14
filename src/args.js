@@ -60,4 +60,20 @@ module.exports = require('yargs')
     default: 1,
     describe: 'Specifies that tests should run concurrently',
     type: 'number'
+  })
+  .option('app', {
+    alias: 'a',
+    default: null,
+    describe: 'Executes the specified shell command before running tests. Use it to launch or deploy the application you are going to test.',
+  })
+  .option('appInitDelay', {
+    default: 1000,
+    describe: 'Specifies the time (in milliseconds) allowed for an application launched using the --app option to initialize.',
+    type: 'number'
+  })
+  .option('tags', {
+    alias: 't',
+    default: [],
+    describe: 'Run tests only for the tags',
+    type: 'array'
   });
