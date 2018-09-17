@@ -140,7 +140,7 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
   }
 
   _shouldRunScenario(scenario) {
-    if (!this.tags || !this.tags.length) {
+    if (!this.tags.length) {
       return true;
     }
 

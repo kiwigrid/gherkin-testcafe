@@ -41,6 +41,11 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
     return this;
   }
 
+  /**
+   * Add one or more tags so specify which tests are run
+   * @param {string | string[]} tags
+   * @returns {TestcafeGherkinRunner}
+   */
   tags(tags) {
     this.bootstrapper.tags = [...this.bootstrapper.tags, ...tags];
 
