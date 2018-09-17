@@ -20,8 +20,6 @@ module.exports = async ({
   const testcafe = await createTestCafe(hostname, ...ports.slice(0, 2));
   const runner = testcafe.createRunner();
 
-  console.log("Running with browsers", browsers, "tags", tags, "concurrency", concurrency);
-
   try {
     const failedCount = await runner
       .browsers(browsers)

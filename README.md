@@ -48,6 +48,10 @@ The following options are supported:
 | debugMode | N.A. | Optional | Execute test steps one by one pausing the test after each step | false |
 | debugOnFail | N.A. | Optional | Enter debug mode when the test fails | false |
 | speed | N.A. | Optional | Set the speed of test execution (0.01 ... 1) | 1 |
+| concurrency | c | Optional | Specifies that tests should run concurrently | 1 |
+| app | a | Optional | Executes the specified shell command before running tests. Use it to launch or deploy the application you are going to test. | null |
+| appInitDelay | N.A. | Optional | Specifies the time (in milliseconds) allowed for an application launched using the --app option to initialize. | 0 |
+| tags | t | Optional | Run only tests having the specified tags | [] |
 
 ## Programming interface
 
