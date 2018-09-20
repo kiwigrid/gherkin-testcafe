@@ -1,9 +1,10 @@
 {
   "name": "gherkin-testcafe",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "Lukas Kullmann <lukas.kullmann@kiwigrid.com>",
   "contributors": [
-    "Wilhelm Behncke <behncke@sitegeist.de>"
+    "Wilhelm Behncke <behncke@sitegeist.de>",
+    "Jarmo Koivisto"
   ],
   "repository": {
     "type": "git",
