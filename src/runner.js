@@ -1,6 +1,6 @@
-const createTestCafe = require('./createTestcafeGherkin');
+import createTestCafe from './createTestcafeGherkin';
 
-module.exports = async ({
+export default async ({
   hostname = 'localhost',
   browsers,
   ports,

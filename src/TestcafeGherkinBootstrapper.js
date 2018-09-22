@@ -1,14 +1,14 @@
-const fs = require('fs');
-const { Parser, Compiler } = require('gherkin');
-const TestcafeBootstrapper = require('testcafe/lib/runner/bootstrapper');
-const Fixture = require('testcafe/lib/api/structure/fixture');
-const Test = require('testcafe/lib/api/structure/test');
-const { GeneralError } = require('testcafe/lib/errors/runtime');
-const MESSAGE = require('testcafe/lib/errors/runtime/message');
-const { supportCodeLibraryBuilder } = require('cucumber');
-const testRunTracker = require('testcafe/lib/api/test-run-tracker');
+import { supportCodeLibraryBuilder } from 'cucumber';
+import fs from 'fs';
+import { Compiler, Parser } from 'gherkin';
+import Fixture from 'testcafe/lib/api/structure/fixture';
+import Test from 'testcafe/lib/api/structure/test';
+import testRunTracker from 'testcafe/lib/api/test-run-tracker';
+import { GeneralError } from 'testcafe/lib/errors/runtime';
+import MESSAGE from 'testcafe/lib/errors/runtime/message';
+import TestcafeBootstrapper from 'testcafe/lib/runner/bootstrapper';
 
-module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper {
+export default class TestcafeGherkinBootstrapper extends TestcafeBootstrapper {
   constructor(...args) {
     super(...args);
 
@@ -156,4 +156,4 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
 
     return false;
   }
-};
+}

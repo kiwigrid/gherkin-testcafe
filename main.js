@@ -1,8 +1,6 @@
-#!/usr/bin/env node
+import main from './src/runner';
+import args from './src/args';
 
-"use strict";
+const { argv } = args.help();
 
-const main = require("./src/runner");
-const { argv } = require("./src/args").help();
-
-main(argv);
+main(argv).catch(error => console.error(error));

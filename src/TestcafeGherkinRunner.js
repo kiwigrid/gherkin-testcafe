@@ -1,9 +1,9 @@
-const glob = require('glob');
-const path = require('path');
-const TestcafeRunner = require('testcafe/lib/runner/index');
-const TestcafeGherkinBootstrapper = require('./TestcafeGherkinBootstrapper');
+import glob from 'glob';
+import path from 'path';
+import TestcafeRunner from 'testcafe/lib/runner/index';
+import TestcafeGherkinBootstrapper from './TestcafeGherkinBootstrapper';
 
-module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
+export default class TestcafeGherkinRunner extends TestcafeRunner {
   constructor(proxy, browserConnectionGateway) {
     super(proxy, browserConnectionGateway);
 
@@ -58,4 +58,4 @@ module.exports = class TestcafeGherkinRunner extends TestcafeRunner {
       .reduce((accumulator, resolvedPaths) => [...accumulator, ...resolvedPaths])
       .map(resolvedPath => path.join(process.cwd(), resolvedPath));
   }
-};
+}

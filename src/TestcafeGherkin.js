@@ -1,7 +1,7 @@
-const Testcafe = require('testcafe/lib/testcafe');
-const TestcafeGherkinRunner = require('./TestcafeGherkinRunner');
+import Testcafe from 'testcafe/lib/testcafe';
+import TestcafeGherkinRunner from './TestcafeGherkinRunner';
 
-module.exports = class TestcafeGherkin extends Testcafe {
+export default class TestcafeGherkin extends Testcafe {
   createRunner() {
     const newRunner = new TestcafeGherkinRunner(this.proxy, this.browserConnectionGateway);
 
@@ -9,4 +9,4 @@ module.exports = class TestcafeGherkin extends Testcafe {
 
     return newRunner;
   }
-};
+}

@@ -1,13 +1,13 @@
 // require stack-chain here to prevent testcafe from loading stack-chain
 // Same error as
 // https://github.com/DevExpress/testcafe/issues/2166
-require('stack-chain');
+import 'stack-chain';
 
-const setupExitHook = require('async-exit-hook');
-const endpointUtils = require('endpoint-utils');
-const { GeneralError } = require('testcafe/lib/errors/runtime');
-const MESSAGE = require('testcafe/lib/errors/runtime/message');
-const TestcafeGherkin = require('./TestcafeGherkin');
+import setupExitHook from 'async-exit-hook';
+import endpointUtils from 'endpoint-utils';
+import { GeneralError } from 'testcafe/lib/errors/runtime';
+import MESSAGE from 'testcafe/lib/errors/runtime/message';
+import TestcafeGherkin from './TestcafeGherkin';
 
 // Validations
 async function getValidHostname(hostname) {
@@ -30,7 +30,7 @@ async function getValidPort(port) {
   return port;
 }
 
-module.exports = async (hostname, port1, port2) => {
+export default async (hostname, port1, port2) => {
   [hostname, port1, port2] = await Promise.all([getValidHostname(hostname), getValidPort(port1), getValidPort(port2)]);
 
   const testcafe = new TestcafeGherkin(hostname, port1, port2);
