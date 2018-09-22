@@ -86,7 +86,7 @@ export default class TestcafeGherkinBootstrapper extends TestcafeBootstrapper {
   _loadStepDefinitions() {
     supportCodeLibraryBuilder.reset(process.cwd());
     this.stepFiles.forEach(stepFile => {
-      require(stepFile);
+      __non_webpack_require__(stepFile);
     });
 
     const finalizedStepDefinitions = supportCodeLibraryBuilder.finalize();
