@@ -143,7 +143,24 @@ Most notable features are:
 - Features (Gherkin `feature` keyword): Will be transformed into a [TestCafé fixture](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#fixtures).
 - Scenarios (Gherkin `scenario` keyword): Will be transformed into a [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Scenario outlines (Gherkin `scenario outline` and `examples` keywords): Will transform every example into on [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
-- Tags/ Hooks: See [Hooks](#hooks).
+- Tags/ Hooks: See [Tags](#tags) and [Hooks](#hooks).
+
+### Tags
+
+Scenarios can be tagged using [Gherkin's @-notation](https://docs.cucumber.io/cucumber/api/#tags).
+The runner can then be configured to filter scenarios to be run based on these tags.
+The tags will be evaluated such that scenarios that have any of the including tags (begins with @) but none of the excluding tags (begins with ~@) will be run.
+
+Examples:
+
+```
+    runner.tags(['@TAG']) // Will run all scenarios marked with @TAG
+
+    runner.tags(['~@TAG']) // Will run all scenarios that are not marked with @TAG
+
+    runner.tags(['@TAG', '~@OTHER_TAG']) // Will run all scenarios that are marked with @TAG but not with @OTHER_TAG
+
+```
 
 ### Hooks
 

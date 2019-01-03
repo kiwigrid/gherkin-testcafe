@@ -140,20 +140,25 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
   }
 
   _shouldRunScenario(scenario) {
-    if (!this.tags.length) {
-      return true;
-    }
+    return (
+      this._scenarioHasAnyOfTheTags(scenario, this._getIncludingTags(this.tags)) &&
+      this._scenarioLacksTags(scenario, this._getExcludingTags(this.tags))
+    );
+  }
 
-    return this._scenarioHasAnyOfTheTags(scenario, this.tags);
+  _getIncludingTags(tags) {
+    return tags.filter(tag => !tag.startsWith('~'));
+  }
+
+  _getExcludingTags(tags) {
+    return tags.filter(tag => tag.startsWith('~')).map(tag => tag.slice(1));
   }
 
   _scenarioHasAnyOfTheTags(scenario, tags) {
-    for (let i = 0; i < scenario.tags.length; i++) {
-      if (tags.indexOf(scenario.tags[i].name) > -1) {
-        return true;
-      }
-    }
+    return !tags.length || tags.some(tag => scenario.tags.map(t => t.name).includes(tag));
+  }
 
-    return false;
+  _scenarioLacksTags(scenario, tags) {
+    return !tags.length || !this._scenarioHasAnyOfTheTags(scenario, tags);
   }
 };
