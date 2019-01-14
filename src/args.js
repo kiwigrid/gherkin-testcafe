@@ -31,6 +31,13 @@ export default yargs
     describe: 'Make tests not fail when a JS error happens on a page',
     type: 'boolean'
   })
+  .option('skipUncaughtErrors', {
+    alias: 'u',
+    default: false,
+    describe:
+      'Defines whether to continue running a test after an uncaught error or unhandled promise rejection occurs on the server',
+    type: 'boolean'
+  })
   .option('disablePageReloads', {
     default: false,
     describe: 'Disable page reloads between tests',
@@ -51,6 +58,26 @@ export default yargs
     default: false,
     describe: 'Enter debug mode when the test fails',
     type: 'boolean'
+  })
+  .option('stopOnFirstFail', {
+    default: false,
+    describe: 'Defines whether to stop a test run if a test fails',
+    type: 'boolean'
+  })
+  .option('selectorTimeout', {
+    default: 10000,
+    describe: 'Specifies the time (in milliseconds) within which selectors make attempts to obtain a node to be returned',
+    type: 'number'
+  })
+  .option('assertionTimeout', {
+    default: 3000,
+    describe: 'Specifies the time (in milliseconds) within which TestCafe makes attempts to successfully execute an assertion',
+    type: 'number'
+  })
+  .option('pageLoadTimeout', {
+    default: 3000,
+    describe: 'Specifies the time (in milliseconds) TestCafe waits for the window.load event to fire',
+    type: 'number'
   })
   .option('speed', {
     default: 1,
