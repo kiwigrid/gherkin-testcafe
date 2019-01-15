@@ -7,10 +7,15 @@ module.exports = async ({
   specs,
   steps,
   skipJsErrors,
+  skipUncaughtErrors,
   disablePageReloads,
   quarantineMode,
   debugMode,
   debugOnFail,
+  stopOnFirstFail,
+  selectorTimeout,
+  assertionTimeout,
+  pageLoadTimeout,
   speed,
   concurrency,
   app,
@@ -28,7 +33,19 @@ module.exports = async ({
       .concurrency(concurrency)
       .startApp(app, appInitDelay)
       .tags(tags)
-      .run({ skipJsErrors, disablePageReloads, quarantineMode, debugMode, debugOnFail, speed });
+      .run({
+        skipJsErrors,
+        skipUncaughtErrors,
+        disablePageReloads,
+        quarantineMode,
+        debugMode,
+        debugOnFail,
+        stopOnFirstFail,
+        selectorTimeout,
+        assertionTimeout,
+        pageLoadTimeout,
+        speed
+      });
 
     process.exit(failedCount && 1);
   } catch (error) {

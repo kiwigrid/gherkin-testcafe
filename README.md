@@ -43,10 +43,15 @@ The following options are supported:
 | browsers | b | Optional | A space separated list of browsers to run the tests in. | chrome:headless |
 | ports | p | Optional | A space separated list of ports for TestCafé to perform testing on. | 1337,1338 |
 | skipJsErrors | e | Optional | Make tests not fail when a JS error happens on a page | false |
+| skipUncaughtErrors | u | Optional | Defines whether to continue running a test after an uncaught error or unhandled promise rejection occurs on the server | false |
 | disablePageReloads | N.A. | Optional | Disable page reloads between tests | false |
 | quarantineMode | q | Optional | Enable quarantine mode | false |
 | debugMode | N.A. | Optional | Execute test steps one by one pausing the test after each step | false |
 | debugOnFail | N.A. | Optional | Enter debug mode when the test fails | false |
+| stopOnFirstFail | sf | Optional | Defines whether to stop a test run if a test fails | false |
+| selectorTimeout | N.A. | Optional | Specifies the time (in milliseconds) within which selectors make attempts to obtain a node to be returned | 10000 |
+| assertionTimeout | N.A. | Optional | Specifies the time (in milliseconds) within which TestCafe makes attempts to successfully execute an assertion | 3000 |
+| pageLoadTimeout | N.A. | Optional | Specifies the time (in milliseconds) TestCafe waits for the window.load event to fire | 3000 |
 | speed | N.A. | Optional | Set the speed of test execution (0.01 ... 1) | 1 |
 | concurrency | c | Optional | Specifies that tests should run concurrently | 1 |
 | app | a | Optional | Executes the specified shell command before running tests. Use it to launch or deploy the application you are going to test. | null |
