@@ -65,12 +65,14 @@ module.exports = require('yargs')
   })
   .option('selectorTimeout', {
     default: 10000,
-    describe: 'Specifies the time (in milliseconds) within which selectors make attempts to obtain a node to be returned',
+    describe:
+      'Specifies the time (in milliseconds) within which selectors make attempts to obtain a node to be returned',
     type: 'number'
   })
   .option('assertionTimeout', {
     default: 3000,
-    describe: 'Specifies the time (in milliseconds) within which TestCafe makes attempts to successfully execute an assertion',
+    describe:
+      'Specifies the time (in milliseconds) within which TestCafe makes attempts to successfully execute an assertion',
     type: 'number'
   })
   .option('pageLoadTimeout', {
