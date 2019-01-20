@@ -100,10 +100,9 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
 
   _resolveAndRunStepDefinition(testController, step) {
     for (const stepDefinition of this.stepDefinitions) {
-      const match = stepDefinition.pattern.exec(step.text);
-
-      if (match) {
-        return this._runStep(stepDefinition.code, testController, match.slice(1));
+      const [isMatched, parameters] = this._shouldRunStep(stepDefinition, step);
+      if (isMatched) {
+        return this._runStep(stepDefinition.code, testController, parameters);
       }
     }
 
@@ -144,6 +143,15 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       this._scenarioHasAnyOfTheTags(scenario, this._getIncludingTags(this.tags)) &&
       this._scenarioLacksTags(scenario, this._getExcludingTags(this.tags))
     );
+  }
+
+  _shouldRunStep(stepDefinition, step) {
+    if (typeof stepDefinition.pattern === 'string') {
+      return [stepDefinition.pattern === step.text, []];
+    } else if (typeof stepDefinition.pattern.exec === 'function') {
+      const match = stepDefinition.pattern.exec(step.text);
+      return [Boolean(match), match ? match.slice(1) : []];
+    }
   }
 
   _getIncludingTags(tags) {
