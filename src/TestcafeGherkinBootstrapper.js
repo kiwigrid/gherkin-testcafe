@@ -148,10 +148,11 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
   _shouldRunStep(stepDefinition, step) {
     if (typeof stepDefinition.pattern === 'string') {
       return [stepDefinition.pattern === step.text, []];
-    } else if (typeof stepDefinition.pattern.exec === 'function') {
+    } else if (stepDefinition.pattern instanceof RegExp) {
       const match = stepDefinition.pattern.exec(step.text);
       return [Boolean(match), match ? match.slice(1) : []];
     }
+    throw new Error(`Step implementation is not valid for: ${step.text}`);
   }
 
   _getIncludingTags(tags) {
