@@ -152,7 +152,10 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       const match = stepDefinition.pattern.exec(step.text);
       return [Boolean(match), match ? match.slice(1) : []];
     }
-    throw new Error(`Step implementation is not valid for: ${step.text}`);
+
+    const stepType = step.text instanceof Object ? step.text.constructor.name : typeof step.text;
+
+    throw new Error(`Step implementation invalid. Has to be a string or RegExp. Received ${stepType}`);
   }
 
   _getIncludingTags(tags) {
