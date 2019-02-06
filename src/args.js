@@ -108,4 +108,10 @@ module.exports = require('yargs')
     default: [],
     describe: 'Run only tests having the specified tags',
     type: 'array'
+  })
+  .option('proxy', {
+    alias: 'x',
+    default: null,
+    describe: 'Specifies the proxy server used in your local network to access the Internet.',
+    type: 'string'
   });

@@ -57,6 +57,7 @@ The following options are supported:
 | app | a | Optional | Executes the specified shell command before running tests. Use it to launch or deploy the application you are going to test. | null |
 | appInitDelay | N.A. | Optional | Specifies the time (in milliseconds) allowed for an application launched using the --app option to initialize. | 0 |
 | tags | t | Optional | Run only tests having the specified tags | [] |
+| proxy | x | Optional | Specifies the proxy server used in your local network to access the Internet | null |
 
 ## Programming interface
 
