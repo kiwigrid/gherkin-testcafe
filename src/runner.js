@@ -20,7 +20,8 @@ module.exports = async ({
   concurrency,
   app,
   appInitDelay,
-  tags
+  tags,
+  proxy
 }) => {
   const testcafe = await createTestCafe(hostname, ...ports.slice(0, 2));
   const runner = testcafe.createRunner();
@@ -31,6 +32,7 @@ module.exports = async ({
       .specs(specs)
       .steps(steps)
       .concurrency(concurrency)
+      .useProxy(proxy)
       .startApp(app, appInitDelay)
       .tags(tags)
       .run({
