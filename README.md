@@ -14,7 +14,7 @@ Once official support is established, this package will be abandoned.
 Install `gherkin-testcafe` and `cucumber`<sup>1</sup> via npm or yarn:
 
     npm i gherkin-testcafe cucumber
-    
+
 or
 
     yarn add gherkin-testcafe cucumber
@@ -27,9 +27,9 @@ You will need it to define steps (see [Writing step definitions](#writing-step-d
 Use the `gherkin-testcafe` package to run test via CLI:
 
     gherkin-testcafe --steps tests/**/*.js --specs tests/**/*.feature --browsers firefox
-    
+
 You can use shorthands:
-    
+
     gherkin-testcafe -d tests/**/*.js -s tests/**/*.feature -b firefox
 
 Out of [TestCafé's CLI options](https://devexpress.github.io/testcafe/documentation/using-testcafe/command-line-interface.html#options) a limited amount are supported for this package.
@@ -37,7 +37,7 @@ Out of [TestCafé's CLI options](https://devexpress.github.io/testcafe/documenta
 The following options are supported:
 
 | Option | Shorthand | Required |Description | Default
-| --- | ---| --- | --- | --- | 
+| --- | ---| --- | --- | --- |
 | specs | s | **Required** | A space separated list of feature files to run.We use [glob](https://github.com/isaacs/node-glob) to match paths. | N.A. |
 | steps | d | **Required** | A space separated list of file paths to load the step definitions from. We use [glob](https://github.com/isaacs/node-glob) to match paths. | N.A. |
 | browsers | b | Optional | A space separated list of browsers to run the tests in. | chrome:headless |
@@ -57,7 +57,7 @@ The following options are supported:
 | app | a | Optional | Executes the specified shell command before running tests. Use it to launch or deploy the application you are going to test. | null |
 | appInitDelay | N.A. | Optional | Specifies the time (in milliseconds) allowed for an application launched using the --app option to initialize. | 0 |
 | tags | t | Optional | Run only tests having the specified tags | [] |
-| proxy | x | Optional | Specifies the proxy server used in your local network to access the Internet | null |
+| proxy | N.A.| Optional | Specifies the proxy server used in your local network to access the Internet | null |
 
 ## Programming interface
 
@@ -75,7 +75,7 @@ module.exports = async () => {
     const testcafe = await createTestCafe();
     const runner = await testcafe.createRunner();
     const remoteConnection = await testcafe.createBrowserConnection();
-    
+
     return runner
 -       .src('test.js')
 +       .steps('steps/**/*.js')
@@ -93,9 +93,9 @@ Just like `src`, you can add multiple paths to search for `specs` and `steps`:
 runner
     .step('location-1/*.js')
     .step('location-2/*.js');
-    
+
 // or
-    
+
 runner.step(['location-1/*.js', 'location-2/*.js'])
 ```
 
@@ -191,7 +191,7 @@ Before('@tag1', async (t) => {
 });
 ```
 
-In the future, untagged hooks will be supported. 
+In the future, untagged hooks will be supported.
 
 #### `BeforeAll` and `AfterAll`
 

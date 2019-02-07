@@ -110,7 +110,6 @@ module.exports = require('yargs')
     type: 'array'
   })
   .option('proxy', {
-    alias: 'x',
     default: null,
     describe: 'Specifies the proxy server used in your local network to access the Internet.',
     type: 'string'
