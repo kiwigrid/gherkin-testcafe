@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 
-"use strict";
+'use strict';
 
-const main = require("./src/runner");
-const { argv } = require("./src/args").help();
-
-main(argv);
+require('./src/cli');

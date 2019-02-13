@@ -22,50 +22,48 @@ or
 <sup>1</sup> This package internally uses [Cucumber.js](https://github.com/cucumber/cucumber-js) to parse step definitions.
 You will need it to define steps (see [Writing step definitions](#writing-step-definitions)).
 
+## Upgrading from version 1.x
+
+With TestCafé version 1.0, this package has introduced some breaking changes to it's API.
+These changes help this package be more future-proof in terms of upcoming features.
+
+When upgrading from version 1 to version 2, keep in mind, that the following things have changed:
+
+* CLI interface is now passed through from TestCafé itself. So some options have changed:
+  * `--specs`, `--steps`, `-s` and `-d` option no longer exist. Please define all the files as regular test files.
+    Also note, that all feature files have to have `.feature` file ending.
+  * `-b` option is now a shorthand for `--list-browsers` (as it is in the regular testcafe CLI). 
+    Define browsers like you would in testcafe.
+    See also [CLI usage](#cli-usage).
+* Step parameters are now passed to the step implementation as an array.
+  Code needs to be refactored in the following way:
+  ```diff
+  - Given(/some (.+) text (.+) with (.+) capturing (.+) groups/, async (t, param1, param2, param 3, param 4) => {});
+  + Given(/some (.+) text (.+) with (.+) capturing (.+) groups/, async (t, [param1, param2, param 3, param 4]) => {});
+  ```
+* BeforeAll and AfterAll hooks now run before/ after a feature, not a scenario. See also [BeforeAll and AfterAll](#beforeall-and-afterall).
+* The same prohibition for multiple method calls as for testcafe@1.0.0 applies. See also [testcafe@1.0.0 release notes](https://github.com/DevExpress/testcafe/releases/tag/v1.0.0).
+* Legacy Docker support dropped
+
 ## CLI usage
 
-Use the `gherkin-testcafe` package to run test via CLI:
+Use the `gherkin-testcafe` just like you use TestCafé's CLI. Just replace `testcafe` by `gherkin-testcafe` and load all JS and feature files:
 
-    gherkin-testcafe --steps tests/**/*.js --specs tests/**/*.feature --browsers firefox
+    gherkin-testcafe firefox,IE tests/**/*.js tests/**/*.feature
+    
+Use `--help` command to see all options:
 
-You can use shorthands:
-
-    gherkin-testcafe -d tests/**/*.js -s tests/**/*.feature -b firefox
-
-Out of [TestCafé's CLI options](https://devexpress.github.io/testcafe/documentation/using-testcafe/command-line-interface.html#options) a limited amount are supported for this package.
-
-The following options are supported:
-
-| Option | Shorthand | Required |Description | Default
-| --- | ---| --- | --- | --- |
-| specs | s | **Required** | A space separated list of feature files to run.We use [glob](https://github.com/isaacs/node-glob) to match paths. | N.A. |
-| steps | d | **Required** | A space separated list of file paths to load the step definitions from. We use [glob](https://github.com/isaacs/node-glob) to match paths. | N.A. |
-| browsers | b | Optional | A space separated list of browsers to run the tests in. | chrome:headless |
-| ports | p | Optional | A space separated list of ports for TestCafé to perform testing on. | 1337,1338 |
-| skipJsErrors | e | Optional | Make tests not fail when a JS error happens on a page | false |
-| skipUncaughtErrors | u | Optional | Defines whether to continue running a test after an uncaught error or unhandled promise rejection occurs on the server | false |
-| disablePageReloads | N.A. | Optional | Disable page reloads between tests | false |
-| quarantineMode | q | Optional | Enable quarantine mode | false |
-| debugMode | N.A. | Optional | Execute test steps one by one pausing the test after each step | false |
-| debugOnFail | N.A. | Optional | Enter debug mode when the test fails | false |
-| stopOnFirstFail | sf | Optional | Defines whether to stop a test run if a test fails | false |
-| selectorTimeout | N.A. | Optional | Specifies the time (in milliseconds) within which selectors make attempts to obtain a node to be returned | 10000 |
-| assertionTimeout | N.A. | Optional | Specifies the time (in milliseconds) within which TestCafe makes attempts to successfully execute an assertion | 3000 |
-| pageLoadTimeout | N.A. | Optional | Specifies the time (in milliseconds) TestCafe waits for the window.load event to fire | 3000 |
-| speed | N.A. | Optional | Set the speed of test execution (0.01 ... 1) | 1 |
-| concurrency | c | Optional | Specifies that tests should run concurrently | 1 |
-| app | a | Optional | Executes the specified shell command before running tests. Use it to launch or deploy the application you are going to test. | null |
-| appInitDelay | N.A. | Optional | Specifies the time (in milliseconds) allowed for an application launched using the --app option to initialize. | 0 |
-| tags | t | Optional | Run only tests having the specified tags | [] |
-| proxy | N.A.| Optional | Specifies the proxy server used in your local network to access the Internet | null |
-
+    gherkin-testcafe --help
+    
+All [TestCafé CLI options](https://devexpress.github.io/testcafe/documentation/using-testcafe/command-line-interface.html) are supported.
+ 
 ## Programming interface
 
 To get more fine grained control over the testrun, you can use the programming interface.
 It is very similar to [TestCafé's programming interface](https://devexpress.github.io/testcafe/documentation/using-testcafe/programming-interface/).
 It supports all options of [TestCafé's runner class](https://devexpress.github.io/testcafe/documentation/using-testcafe/programming-interface/runner.html), except it replaces `src` with `steps` and `specs`.
 
-You can use the programming interface almost exactly like TestCafé's. Just replace the import of `testcafe` by `gherkin-testcafe` and replace `src` by `steps` and `specs`:
+You can use the programming interface almost exactly like TestCafé's. Just replace the import of `testcafe` by `gherkin-testcafe` and load all step and spec files:
 
 ```diff
 - const createTestCafe = require('testcafe');
@@ -78,26 +76,13 @@ module.exports = async () => {
 
     return runner
 -       .src('test.js')
-+       .steps('steps/**/*.js')
-+       .specs('specs/**/*.feature')
++       .steps(['steps/**/*.js', 'specs/**/*.feature'])
         .browsers([remoteConnection, 'chrome'])
         .run();
 };
 ```
 
 You can use all [other runner methods](https://devexpress.github.io/testcafe/documentation/using-testcafe/programming-interface/runner.html#methods), that you like as well (e.g. `filter`, `screenshots` and `reporter`).
-
-Just like `src`, you can add multiple paths to search for `specs` and `steps`:
-
-```js
-runner
-    .step('location-1/*.js')
-    .step('location-2/*.js');
-
-// or
-
-runner.step(['location-1/*.js', 'location-2/*.js'])
-```
 
 ## Writing step definitions
 
@@ -111,9 +96,14 @@ Given(/some precondition/, async (t) => {
     // The second argument is a function that takes TestCafé's test controller object as a parameter.
 });
 
-When(/something (.+) happens/, async (t, param1) => {
-    // Captured parameters in the step regex will be passed as arguments to the test implementation.
-    // "When Something great happens" will call this function with "great" as `param1`.
+When(/something (.+) happens/, async (t, params) => {
+    // Captured parameters in the step regex will be passed as the second argument to the test implementation.
+    // "When Something great happens" will call this function with `["great"]` as `params`.
+});
+
+When(/something (.+) and (.+) happens/, async (t, [param1, param2]) => {
+    // You can use regular array destructuring to access params directly.
+    // "When Something great and awesome happens" will result in `"great"` as `param1` and `"awesome"` as `param2`.
 });
 
 Then(/an assertion takes place/, async (t) => {
@@ -150,6 +140,7 @@ Most notable features are:
 - Scenarios (Gherkin `scenario` keyword): Will be transformed into a [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Scenario outlines (Gherkin `scenario outline` and `examples` keywords): Will transform every example into on [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Tags/ Hooks: See [Tags](#tags) and [Hooks](#hooks).
+- Tables are not (yet) supported. See #14.
 
 ### Tags
 
@@ -165,13 +156,13 @@ Examples:
     runner.tags(['~@TAG']) // Will run all scenarios that are not marked with @TAG
 
     runner.tags(['@TAG', '~@OTHER_TAG']) // Will run all scenarios that are marked with @TAG but not with @OTHER_TAG
-
 ```
+
+__Note:__ Do not set `--tags` CLI parameter when running tests through the programming interface as it is internally used to pass the selected tags to the gherkin compiler.
 
 ### Hooks
 
 In contrast to [Cucumber.js' hooks](https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/hooks.md), they are implemented differently in this package.
-__Because of this inconsistency, this feature will change in the future to match the cucumber documentation better.__
 Hooks in this package are always asynchronous.
 Instead of taking a callback parameter to end the hook, this package's hooks return a promise.
 Once this promise fulfills, the hook is considered done.
@@ -180,7 +171,7 @@ So be careful when using multiple hooks for the same scenario.
 
 #### `Before` and `After`
 
-This package only supports [tagged hooks](https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/hooks.md#tagged-hooks) with a single tag as parameter.
+Before/ After hooks run before or after each test (i.e. scenario).
 Each hook implementation gets TestCafé's test controller object as a parameter.
 
 ```js
@@ -188,15 +179,22 @@ const { Before } = require('cucumber');
 
 Before('@tag1', async (t) => {
     // do something
+    // e.g. write to t.ctx or read from t.fixtureCtx
 });
 ```
 
-In the future, untagged hooks will be supported.
+Untagged hooks are run before/ after each test.
 
 #### `BeforeAll` and `AfterAll`
 
-__The implementation of these hooks is seriously broken and should not be used.__
-Currently, `BeforeAll` and `AfterAll` hooks will be run before (or after) each test regardless of scenario tags.
+BeforeAll/ AfterAll hooks run before and after each fixture (i.e. feature).
+Each hook implementation gets TestCafé's fixture context. 
+See [Sharing Variables Between Fixture Hooks and Test Code](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#sharing-variables-between-fixture-hooks-and-test-code) documentation for more details.
 
-In the future, they will be run before/ after a fixture.
-__This will be a breaking change__.
+```js
+const { BeforeAll } = require('cucumber');
+
+BeforeAll(async (ctx) => {
+    // do something with the context
+})
+```
