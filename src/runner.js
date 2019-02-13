@@ -1,57 +1,21 @@
-const createTestCafe = require('./createTestcafeGherkin');
+const { GeneralError } = require('testcafe/lib/errors/runtime');
+const MESSAGE = require('testcafe/lib/errors/runtime/message');
+const TestcafeRunner = require('testcafe/lib/runner');
 
-module.exports = async ({
-  hostname = 'localhost',
-  browsers,
-  ports,
-  specs,
-  steps,
-  skipJsErrors,
-  skipUncaughtErrors,
-  disablePageReloads,
-  quarantineMode,
-  debugMode,
-  debugOnFail,
-  stopOnFirstFail,
-  selectorTimeout,
-  assertionTimeout,
-  pageLoadTimeout,
-  speed,
-  concurrency,
-  app,
-  appInitDelay,
-  tags,
-  proxy
-}) => {
-  const testcafe = await createTestCafe(hostname, ...ports.slice(0, 2));
-  const runner = testcafe.createRunner();
+module.exports = class GherkinTestcafeRunner extends TestcafeRunner {
+  constructor(...args) {
+    super(...args);
 
-  try {
-    const failedCount = await runner
-      .browsers(browsers)
-      .specs(specs)
-      .steps(steps)
-      .concurrency(concurrency)
-      .useProxy(proxy)
-      .startApp(app, appInitDelay)
-      .tags(tags)
-      .run({
-        skipJsErrors,
-        skipUncaughtErrors,
-        disablePageReloads,
-        quarantineMode,
-        debugMode,
-        debugOnFail,
-        stopOnFirstFail,
-        selectorTimeout,
-        assertionTimeout,
-        pageLoadTimeout,
-        speed
-      });
+    this.apiMethodWasCalled.tags = false;
+  }
 
-    process.exit(failedCount && 1);
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
+  tags(...tags) {
+    if (this.apiMethodWasCalled.tags) throw new GeneralError(MESSAGE.multipleAPIMethodCallForbidden, 'tags');
+
+    tags = this._prepareArrayParameter(tags);
+
+    process.argv.push('--tags', tags.join(','));
+
+    return this;
   }
 };

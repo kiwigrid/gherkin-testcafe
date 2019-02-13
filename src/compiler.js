@@ -1,6 +1,5 @@
 const fs = require('fs');
 const { Parser, Compiler } = require('gherkin');
-const TestcafeBootstrapper = require('testcafe/lib/runner/bootstrapper');
 const Fixture = require('testcafe/lib/api/structure/fixture');
 const Test = require('testcafe/lib/api/structure/test');
 const { GeneralError } = require('testcafe/lib/errors/runtime');
@@ -8,12 +7,20 @@ const MESSAGE = require('testcafe/lib/errors/runtime/message');
 const { supportCodeLibraryBuilder } = require('cucumber');
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 
-module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper {
-  constructor(...args) {
-    super(...args);
+const getTags = () => {
+  const tagsIndex = process.argv.findIndex(val => val === '--tags');
 
-    this.stepFiles = [];
-    this.specFiles = [];
+  if (tagsIndex !== -1) {
+    return process.argv[tagsIndex + 1].split(',');
+  }
+
+  return [];
+};
+
+module.exports = class GherkinTestcafeCompiler {
+  constructor(sources) {
+    this.stepFiles = sources.filter(source => source.substr(-3) === '.js');
+    this.specFiles = sources.filter(source => source.substr(-8) === '.feature');
 
     this.stepDefinitions = [];
 
@@ -22,10 +29,10 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
     this.beforeAllHooks = [];
     this.afterAllHooks = [];
 
-    this.tags = [];
+    this.tags = getTags();
   }
 
-  async _getTests() {
+  getTests() {
     this._loadStepDefinitions();
 
     let tests = [];
@@ -39,7 +46,9 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
       const testFile = { filename: specFile, collectedTests: [] };
       const fixture = new Fixture(testFile);
 
-      fixture(`Feature: ${gherkinAst.feature.name}`);
+      fixture(`Feature: ${gherkinAst.feature.name}`)
+        .before(ctx => this._runFeatureHooks(ctx, this.beforeAllHooks))
+        .after(ctx => this._runFeatureHooks(ctx, this.afterAllHooks));
 
       scenarios.forEach(scenario => {
         if (!this._shouldRunScenario(scenario)) {
@@ -49,8 +58,6 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
         const test = new Test(testFile);
         test(`Scenario: ${scenario.name}`, async t => {
           let error;
-          await this._runHooks(t, this.beforeAllHooks);
-          await this._runHooks(t, this._findHook(scenario, this.beforeHooks));
 
           try {
             for (const step of scenario.steps) {
@@ -60,13 +67,13 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
             error = e;
           }
 
-          await this._runHooks(t, this._findHook(scenario, this.afterHooks));
-          await this._runHooks(t, this.afterAllHooks);
-
           if (error) {
             throw error;
           }
-        }).page('about:blank');
+        })
+          .page('about:blank')
+          .before(t => this._runHooks(t, this._findHook(scenario, this.beforeHooks)))
+          .after(t => this._runHooks(t, this._findHook(scenario, this.afterHooks)));
       });
 
       tests = [...tests, ...testFile.collectedTests];
@@ -86,6 +93,8 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
   _loadStepDefinitions() {
     supportCodeLibraryBuilder.reset(process.cwd());
     this.stepFiles.forEach(stepFile => {
+      delete require.cache[require.resolve(stepFile)];
+
       require(stepFile);
     });
 
@@ -114,27 +123,22 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
 
     testRunTracker.ensureEnabled();
 
-    return markedFn(testController, ...parameters);
+    return markedFn(testController, parameters);
   }
 
   _findHook(scenario, hooks) {
-    const matchedHooks = [];
-
-    hooks.forEach(hook => {
-      scenario.tags.forEach(tag => {
-        if (tag.name === hook.options.tags) {
-          matchedHooks.push(hook);
-          return false;
-        }
-      });
-    });
-
-    return matchedHooks;
+    return hooks.filter(hook => !hook.options.tags || scenario.tags.find(tag => tag.name === hook.options.tags));
   }
 
   async _runHooks(testController, hooks) {
     for (const hook of hooks) {
       await this._runStep(hook.code, testController, []);
+    }
+  }
+
+  async _runFeatureHooks(fixtureCtx, hooks) {
+    for (const hook of hooks) {
+      await hook.code(fixtureCtx);
     }
   }
 
@@ -173,4 +177,10 @@ module.exports = class TestcafeGherkinBootstrapper extends TestcafeBootstrapper 
   _scenarioLacksTags(scenario, tags) {
     return !tags.length || !this._scenarioHasAnyOfTheTags(scenario, tags);
   }
+
+  static getSupportedTestFileExtensions() {
+    return ['.js', '.feature'];
+  }
+
+  static cleanUp() {}
 };

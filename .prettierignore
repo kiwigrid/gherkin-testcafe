@@ -1,20 +1,5 @@
 # dependencies
-/node_modules
-
-# testing
-/coverage
-
-# production
-/.editorconfig
-/dist
-/out
-
-# misc
-.DS_Store
-.idea
-.vscode
-package.json
-package-lock.json
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+/*
+!/src
+!examples
+!main.js

@@ -1,6 +1,6 @@
 {
   "name": "gherkin-testcafe",
-  "version": "1.7.0",
+  "version": "2.0.0",
   "author": "Lukas Kullmann <lukas.kullmann@kiwigrid.com>",
   "contributors": [
     "Wilhelm Behncke <behncke@sitegeist.de>",
@@ -27,26 +27,21 @@
   "bin": {
     "gherkin-testcafe": "./main.js"
   },
-  "main": "src/createTestcafeGherkin.js",
+  "main": "src/index.js",
   "scripts": {
     "prettier": "prettier --write 'src/**/*.{js,yaml,yml,json,md}'",
     "prettier-check": "prettier --list-different 'src/**/*.{js,yaml,yml,json,md}'"
   },
   "dependencies": {
-    "async-exit-hook": "^2.0.1",
-    "endpoint-utils": "^1.0.2",
-    "gherkin": "^5.0.0",
-    "glob": "^7.1.2",
-    "stack-chain": "^2.0.0",
-    "yargs": "^10.0.3"
+    "gherkin": "^5.0.0"
   },
   "peerDependencies": {
     "cucumber": "^4.2.1",
-    "testcafe": "^0.23.3"
+    "testcafe": "^1.0.0"
   },
   "devDependencies": {
     "cucumber": "^4.2.1",
     "prettier": "^1.14.2",
-    "testcafe": "^0.23.3"
+    "testcafe": "^1.0.0"
   }
 }
