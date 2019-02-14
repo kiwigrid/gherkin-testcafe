@@ -27,7 +27,7 @@ You will need it to define steps (see [Writing step definitions](#writing-step-d
 With TestCafé version 1.0, this package has introduced some breaking changes to it's API.
 These changes help this package be more future-proof in terms of upcoming features.
 
-When upgrading from version 1 to version 2, keep in mind, that the following things have changed:
+When upgrading this package from version 1 to version 2, keep in mind, that the following things have changed:
 
 * CLI interface is now passed through from TestCafé itself. So some options have changed:
   * `--specs`, `--steps`, `-s` and `-d` option no longer exist. Please define all the files as regular test files.
