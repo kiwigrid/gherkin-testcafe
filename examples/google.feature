@@ -8,4 +8,3 @@ Feature: The big search feature
     When I am typing my search request "github TestCafe" on Google
     And I am pressing "enter" key on Google
     Then I should see that the first Google's result is "GitHub - DevExpress/testcafe:"
-
