@@ -70,23 +70,15 @@ You can use the programming interface almost exactly like TestCafé's. Just repl
 + const createTestCafe = require('gherkin-testcafe');
 
 module.exports = async () => {
-    let testcafe = null;
+    const testcafe = await createTestCafe();
+    const runner = await testcafe.createRunner();
+    const remoteConnection = await testcafe.createBrowserConnection();
 
-	await createTestCafe()
-		.then(async tc => {
-			testcafe = tc;
-			const runner = await tc.createRunner();
-
-			return runner
--               .src('test.js')
-+               .src(['steps/**/*.js', 'specs/**/*.feature'])
-				.browsers([remoteConnection, 'chrome'])
-				.run();
-
-		}).then(failedCount => {
-			console.log('Tests failed: ' + failedCount);
-			testcafe.close();
-		});
+    return runner
+-       .src('test.js')
++       .src(['steps/**/*.js', 'specs/**/*.feature'])
+        .browsers([remoteConnection, 'chrome'])
+        .run();
 };
 ```
 
