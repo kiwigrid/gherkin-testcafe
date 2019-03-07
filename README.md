@@ -76,7 +76,7 @@ module.exports = async () => {
 
     return runner
 -       .src('test.js')
-+       .steps(['steps/**/*.js', 'specs/**/*.feature'])
++       .src(['steps/**/*.js', 'specs/**/*.feature'])
         .browsers([remoteConnection, 'chrome'])
         .run();
 };
