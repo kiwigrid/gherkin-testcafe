@@ -3,7 +3,7 @@ const { Parser, Compiler } = require('gherkin');
 const Fixture = require('testcafe/lib/api/structure/fixture');
 const Test = require('testcafe/lib/api/structure/test');
 const { GeneralError } = require('testcafe/lib/errors/runtime');
-const MESSAGE = require('testcafe/lib/errors/runtime/message');
+const { RUNTIME_ERRORS } = require('testcafe/lib/errors/types');
 const { supportCodeLibraryBuilder } = require('cucumber');
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 
@@ -84,7 +84,7 @@ module.exports = class GherkinTestcafeCompiler {
     }
 
     if (!tests.length) {
-      throw new GeneralError(MESSAGE.noTestsToRun);
+      throw new GeneralError(RUNTIME_ERRORS.noTestsToRun);
     }
 
     return tests;

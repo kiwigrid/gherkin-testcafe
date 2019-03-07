@@ -1,5 +1,5 @@
 const { GeneralError } = require('testcafe/lib/errors/runtime');
-const MESSAGE = require('testcafe/lib/errors/runtime/message');
+const { RUNTIME_ERRORS } = require('testcafe/lib/errors/types');
 const TestcafeRunner = require('testcafe/lib/runner');
 
 module.exports = class GherkinTestcafeRunner extends TestcafeRunner {
@@ -10,7 +10,7 @@ module.exports = class GherkinTestcafeRunner extends TestcafeRunner {
   }
 
   tags(...tags) {
-    if (this.apiMethodWasCalled.tags) throw new GeneralError(MESSAGE.multipleAPIMethodCallForbidden, 'tags');
+    if (this.apiMethodWasCalled.tags) throw new GeneralError(RUNTIME_ERRORS.multipleAPIMethodCallForbidden, 'tags');
 
     tags = this._prepareArrayParameter(tags);
 

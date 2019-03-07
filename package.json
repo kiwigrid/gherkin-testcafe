@@ -39,12 +39,12 @@
   },
   "peerDependencies": {
     "cucumber": "^4.2.1",
-    "testcafe": "^1.0.0"
+    "testcafe": "^1.1.0"
   },
   "devDependencies": {
     "@types/cucumber": "^4.0.5",
     "cucumber": "^4.2.1",
     "prettier": "^1.14.2",
-    "testcafe": "^1.0.0"
+    "testcafe": "^1.1.0"
   }
 }
