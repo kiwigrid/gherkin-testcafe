@@ -5,6 +5,7 @@ const Test = require('testcafe/lib/api/structure/test');
 const { GeneralError } = require('testcafe/lib/errors/runtime');
 const { RUNTIME_ERRORS } = require('testcafe/lib/errors/types');
 const { supportCodeLibraryBuilder } = require('cucumber');
+const dataTable = require('cucumber/lib/models/data_table');
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 
 const getTags = () => {
@@ -103,7 +104,6 @@ module.exports = class GherkinTestcafeCompiler {
     this.afterAllHooks = finalizedStepDefinitions.afterTestRunHookDefinitions;
     this.beforeHooks = finalizedStepDefinitions.beforeTestCaseHookDefinitions;
     this.beforeAllHooks = finalizedStepDefinitions.beforeTestRunHookDefinitions;
-
     this.stepDefinitions = finalizedStepDefinitions.stepDefinitions;
   }
 
@@ -111,6 +111,10 @@ module.exports = class GherkinTestcafeCompiler {
     for (const stepDefinition of this.stepDefinitions) {
       const [isMatched, parameters] = this._shouldRunStep(stepDefinition, step);
       if (isMatched) {
+        if (this._hasDatatable(step)){
+          const table = new dataTable.default(step.arguments[0]);
+          return this._runStep(stepDefinition.code, testController, table);
+        }
         return this._runStep(stepDefinition.code, testController, parameters);
       }
     }
@@ -176,6 +180,10 @@ module.exports = class GherkinTestcafeCompiler {
 
   _scenarioLacksTags(scenario, tags) {
     return !tags.length || !this._scenarioHasAnyOfTheTags(scenario, tags);
+  }
+
+  _hasDatatable(step) {
+    return (step.arguments.length >= 1 ? step.arguments[0].rows : false);
   }
 
   static getSupportedTestFileExtensions() {
