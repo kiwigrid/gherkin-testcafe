@@ -9,30 +9,14 @@ Before('@googleHook', async () => {
   console.log('Running Google e2e test.');
 });
 
-Given("I am open Google's search page", async t => {
+Given(/I am open Google's search page/, async t => {
   await t.navigateTo('http://www.google.com');
 });
 
-When(/^I am typing my search request "(.+)" on Google$/, async (t, [searchRequest]) => {
+When(/I am typing my search request "(.+)" on Google/, async (t, [searchRequest]) => {
   const input = Selector('[name="q"]', t);
 
   await t.typeText(input, searchRequest);
-});
-
-When(/^I am typing my search request "(.+)" on Google$/, async (t, searchRequest) => {
-  const input = Selector('#lst-ib', t);
-
-  await t.typeText(input, searchRequest);
-});
-
-When(/^I am typing my search request on Google$/, async (t, table) => {
-  const input = Selector('[name="q"]', t);
-
-  for (let i = 0; i < table.hashes().length; i++) {
-    await t.selectText(input).pressKey('delete');
-    await t.typeText(input, table.hashes()[i].searchText);
-  }
-
 });
 
 When(/I am pressing "(.+)" key on Google/, async (t, [key]) => {
