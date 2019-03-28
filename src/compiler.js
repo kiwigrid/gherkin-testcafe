@@ -109,10 +109,9 @@ module.exports = class GherkinTestcafeCompiler {
 
   _resolveAndRunStepDefinition(testController, step) {
     for (const stepDefinition of this.stepDefinitions) {
-      const [isMatched, parameters] = this._shouldRunStep(stepDefinition, step);
+      const [isMatched, parameters, table] = this._shouldRunStep(stepDefinition, step);
       if (isMatched) {
-        if (this._hasDatatable(step)){
-          const table = new dataTable.default(step.arguments[0]);
+        if (table){
           return this._runStep(stepDefinition.code, testController, table);
         }
         return this._runStep(stepDefinition.code, testController, parameters);
@@ -154,11 +153,15 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   _shouldRunStep(stepDefinition, step) {
+    let table;
+    if (this._hasDatatable(step)){
+      table = new dataTable.default(step.arguments[0]);
+    }
     if (typeof stepDefinition.pattern === 'string') {
-      return [stepDefinition.pattern === step.text, []];
+      return [stepDefinition.pattern === step.text, [], table];
     } else if (stepDefinition.pattern instanceof RegExp) {
       const match = stepDefinition.pattern.exec(step.text);
-      return [Boolean(match), match ? match.slice(1) : []];
+      return [Boolean(match), match ? match.slice(1) : [], table];
     }
 
     const stepType = step.text instanceof Object ? step.text.constructor.name : typeof step.text;

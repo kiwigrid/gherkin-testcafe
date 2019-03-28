@@ -1,13 +1,13 @@
 Feature: Datatable demo feature
 
   I want to find TestCafe repository by Google search
-
-  @googleHook
   Scenario: Searching for Datatable by Google
-    Given I am open Google's search page
-    When I am typing my search request on Google
-    | searchText |
-    | cucumber datatable |
-    | github TestCafe |
-    And I am pressing "enter" key on Google
-    Then I should see that the first Google's result is "GitHub - DevExpress/testcafe:"
+    Given I open TestCafe demo page
+    When I click some checkboxes
+    | checkboxId |
+    | remote-testing |
+    | reusing-js-code |
+    | background-parallel-testing |
+    | continuous-integration-embedding |
+    | traffic-markup-analysis |
+    Then The amount of selected checkboxes is "5"
