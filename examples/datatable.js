@@ -9,7 +9,7 @@ Given(/I open TestCafe demo page/, async t => {
   await t.navigateTo('https://devexpress.github.io/testcafe/example/');
 });
 
-When(/I click some checkboxes/, async (t, table) => {
+When(/I click some checkboxes/, async (t, [], table) => {
 
   for (let i = 0; i < table.hashes().length; i++) {
     await t.click('#'+table.hashes()[i].checkboxId);
