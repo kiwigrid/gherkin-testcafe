@@ -111,22 +111,19 @@ module.exports = class GherkinTestcafeCompiler {
     for (const stepDefinition of this.stepDefinitions) {
       const [isMatched, parameters, table] = this._shouldRunStep(stepDefinition, step);
       if (isMatched) {
-        if (table){
-          return this._runStep(stepDefinition.code, testController, table);
-        }
-        return this._runStep(stepDefinition.code, testController, parameters);
+        return this._runStep(stepDefinition.code, testController, parameters, table);
       }
     }
 
     throw new Error(`Step implementation missing for: ${step.text}`);
   }
 
-  _runStep(step, testController, parameters) {
+  _runStep(step, testController, parameters, table) {
     const markedFn = testRunTracker.addTrackingMarkerToFunction(testController.testRun.id, step);
 
     testRunTracker.ensureEnabled();
 
-    return markedFn(testController, parameters);
+    return markedFn(testController, parameters, table);
   }
 
   _findHook(scenario, hooks) {
