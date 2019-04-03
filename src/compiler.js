@@ -150,10 +150,8 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   _shouldRunStep(stepDefinition, step) {
-    let table;
-    if (this._hasDatatable(step)){
-      table = new dataTable.default(step.arguments[0]);
-    }
+    const table = this._hasDatatable(step) ? new dataTable.default(step.arguments[0]) : null;
+
     if (typeof stepDefinition.pattern === 'string') {
       return [stepDefinition.pattern === step.text, [], table];
     } else if (stepDefinition.pattern instanceof RegExp) {
@@ -183,7 +181,7 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   _hasDatatable(step) {
-    return (step.arguments.length >= 1 ? step.arguments[0].rows : false);
+    return step.arguments.length >= 1 ? step.arguments[0].rows : false;
   }
 
   static getSupportedTestFileExtensions() {
