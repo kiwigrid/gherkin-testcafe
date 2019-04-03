@@ -16,10 +16,9 @@ When('I click some checkboxes', async (t, [], table) => {
 });
 
 Then(/^The amount of selected checkboxes is "(.+)"$/, async (t, [amount]) => {
-  const selectedCheckboxes = Selector('input[type="checkbox"]')
-    // select all checkboxes whose name value is in a set of predefined values
-    .withAttribute('name', /custom-name|remote|re-using|background|CI|analysis/)
-    .filter(checkbox => Boolean(checkbox && checkbox.checked));
+  const selectedCheckboxes = Selector('input[type="checkbox"]').filter(checkbox =>
+    Boolean(checkbox && checkbox.checked)
+  );
 
   const checkedCount = await selectedCheckboxes.count;
 
