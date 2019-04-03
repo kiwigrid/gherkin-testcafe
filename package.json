@@ -1,6 +1,6 @@
 {
   "name": "gherkin-testcafe",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": "Lukas Kullmann <lukas.kullmann@kiwigrid.com>",
   "contributors": [
     "Wilhelm Behncke <behncke@sitegeist.de>",
@@ -32,7 +32,7 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "prettier": "prettier --write 'src/**/*.{js,yaml,yml,json,md}'",
+    "prettier": "prettier --write 'src/**/*.js' README.md main.js index.d.ts",
     "prettier-check": "prettier --list-different 'src/**/*.{js,yaml,yml,json,md}'"
   },
   "dependencies": {

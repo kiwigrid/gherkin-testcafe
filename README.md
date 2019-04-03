@@ -24,7 +24,7 @@ You will need it to define steps (see [Writing step definitions](#writing-step-d
 
 ## Upgrading from version 1.x
 
-With TestCafé version 1.0, this package has introduced some breaking changes to it's API.
+With TestCafé version 2.0, this package has introduced some breaking changes to it's API.
 These changes help this package be more future-proof in terms of upcoming features.
 
 When upgrading this package from version 1 to version 2, keep in mind, that the following things have changed:
@@ -56,7 +56,21 @@ Use `--help` command to see all options:
     gherkin-testcafe --help
     
 All [TestCafé CLI options](https://devexpress.github.io/testcafe/documentation/using-testcafe/command-line-interface.html) are supported.
- 
+
+Additionally, you can specify tags to run (see [Tags](#tags)):
+
+    gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG
+    
+When using more than one tag, the list needs to be comma separated:
+
+    gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG1,@TAG2
+    
+Negation of a tag (via `~`) is also possible:
+
+    gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG1,~@TAG2
+    
+This runs all scenarios that have `TAG1`, but not `TAG2`
+
 ## Programming interface
 
 To get more fine grained control over the testrun, you can use the programming interface.
