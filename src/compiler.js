@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Parser, Compiler } = require('gherkin');
+const gherkin = require('gherkin');
 const Fixture = require('testcafe/lib/api/structure/fixture');
 const Test = require('testcafe/lib/api/structure/test');
 const { GeneralError } = require('testcafe/lib/errors/runtime');
@@ -33,52 +33,61 @@ module.exports = class GherkinTestcafeCompiler {
     this.tags = getTags();
   }
 
-  getTests() {
+  streamToArray(readableStream) {
+    return new Promise((resolve, reject) => {
+      const items = [];
+      readableStream.on('data', items.push.bind(items));
+      readableStream.on('error', reject);
+      readableStream.on('end', () => resolve(items));
+    });
+  }
+
+  async getTests() {
     this._loadStepDefinitions();
 
-    let tests = [];
-    const parser = new Parser();
-    const compiler = new Compiler();
+    let tests = await Promise.all(
+      this.specFiles.map(async specFile => {
+        const gherkinResult = await this.streamToArray(gherkin.fromPaths([specFile]));
 
-    this.specFiles.forEach(specFile => {
-      const gherkinAst = parser.parse(fs.readFileSync(specFile).toString());
-      const scenarios = compiler.compile(gherkinAst);
+        const testFile = { filename: specFile, collectedTests: [] };
+        const fixture = new Fixture(testFile);
 
-      const testFile = { filename: specFile, collectedTests: [] };
-      const fixture = new Fixture(testFile);
+        fixture(`Feature: ${gherkinResult[1].gherkinDocument.feature.name}`)
+          .before(ctx => this._runFeatureHooks(ctx, this.beforeAllHooks))
+          .after(ctx => this._runFeatureHooks(ctx, this.afterAllHooks));
 
-      fixture(`Feature: ${gherkinAst.feature.name}`)
-        .before(ctx => this._runFeatureHooks(ctx, this.beforeAllHooks))
-        .after(ctx => this._runFeatureHooks(ctx, this.afterAllHooks));
+        gherkinResult[1].gherkinDocument.feature.children.forEach(child => {
+          const scenario = child.scenario;
+          if (!this._shouldRunScenario(scenario)) {
+            return;
+          }
 
-      scenarios.forEach(scenario => {
-        if (!this._shouldRunScenario(scenario)) {
-          return;
-        }
+          const test = new Test(testFile);
+          test(`Scenario: ${scenario.name}`, async t => {
+            let error;
 
-        const test = new Test(testFile);
-        test(`Scenario: ${scenario.name}`, async t => {
-          let error;
-
-          try {
-            for (const step of scenario.steps) {
-              await this._resolveAndRunStepDefinition(t, step);
+            try {
+              for (const step of scenario.steps) {
+                await this._resolveAndRunStepDefinition(t, step);
+              }
+            } catch (e) {
+              error = e;
             }
-          } catch (e) {
-            error = e;
-          }
 
-          if (error) {
-            throw error;
-          }
-        })
-          .page('about:blank')
-          .before(t => this._runHooks(t, this._findHook(scenario, this.beforeHooks)))
-          .after(t => this._runHooks(t, this._findHook(scenario, this.afterHooks)));
-      });
+            if (error) {
+              throw error;
+            }
+          })
+            .page('about:blank')
+            .before(t => this._runHooks(t, this._findHook(scenario, this.beforeHooks)))
+            .after(t => this._runHooks(t, this._findHook(scenario, this.afterHooks)));
+        });
 
-      tests = [...tests, ...testFile.collectedTests];
-    });
+        return testFile.collectedTests;
+      })
+    );
+
+    tests = tests.reduce((agg, cur) => agg.concat(cur));
 
     if (this.filter) {
       tests = tests.filter(test => this.filter(test.name, test.fixture.name, test.fixture.path));
@@ -150,13 +159,11 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   _shouldRunStep(stepDefinition, step) {
-    const table = this._hasDatatable(step) ? new dataTable.default(step.arguments[0]) : null;
-
     if (typeof stepDefinition.pattern === 'string') {
-      return [stepDefinition.pattern === step.text, [], table];
+      return [stepDefinition.pattern === step.text, [], step.dataTable];
     } else if (stepDefinition.pattern instanceof RegExp) {
       const match = stepDefinition.pattern.exec(step.text);
-      return [Boolean(match), match ? match.slice(1) : [], table];
+      return [Boolean(match), match ? match.slice(1) : [], step.dataTable];
     }
 
     const stepType = step.text instanceof Object ? step.text.constructor.name : typeof step.text;
@@ -178,10 +185,6 @@ module.exports = class GherkinTestcafeCompiler {
 
   _scenarioLacksTags(scenario, tags) {
     return !tags.length || !this._scenarioHasAnyOfTheTags(scenario, tags);
-  }
-
-  _hasDatatable(step) {
-    return step.arguments.length >= 1 ? step.arguments[0].rows : false;
   }
 
   static getSupportedTestFileExtensions() {

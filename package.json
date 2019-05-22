@@ -36,16 +36,16 @@
     "prettier-check": "prettier --list-different 'src/**/*.{js,yaml,yml,json,md}'"
   },
   "dependencies": {
-    "gherkin": "^5.0.0"
+    "gherkin": "^6.0.17"
   },
   "peerDependencies": {
-    "cucumber": "^4.2.1",
-    "testcafe": "^1.1.0"
+    "cucumber": "^5.1.0",
+    "testcafe": "^1.1.4"
   },
   "devDependencies": {
     "@types/cucumber": "^4.0.5",
-    "cucumber": "^4.2.1",
-    "prettier": "^1.14.2",
-    "testcafe": "^1.1.0"
+    "cucumber": "^5.1.0",
+    "prettier": "^1.17.1",
+    "testcafe": "^1.1.4"
   }
 }
