@@ -1,4 +1,4 @@
-import { TableDefinition } from 'cucumber';
+import { DataTable } from 'cucumber';
 import testcafe, { t } from 'testcafe';
 
 export * from 'testcafe';
@@ -17,7 +17,7 @@ declare module 'cucumber' {
 
   export type StepFunction = (
     testController: typeof t,
-    parameters: string[],
+    parameters: any[],
     dataTable: TableDefinition | null
   ) => Promise<void>;
 
