@@ -9,4 +9,4 @@ Feature: Datatable demo feature
     | background-parallel-testing      |
     | continuous-integration-embedding |
     | traffic-markup-analysis          |
-    Then The amount of selected checkboxes is "5"
+    Then The amount of selected checkboxes is 5

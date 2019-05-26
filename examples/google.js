@@ -19,7 +19,7 @@ When(/^I am typing my search request "(.+)" on Google$/, async (t, [searchReques
   await t.typeText(input, searchRequest);
 });
 
-When(/^I am pressing "(.+)" key on Google$/, async (t, [key]) => {
+When('I am pressing "{word}" key on Google', async (t, [key]) => {
   await t.pressKey(key);
 });
 
