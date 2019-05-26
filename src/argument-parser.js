@@ -11,5 +11,10 @@ module.exports = class GherkinTestcafeCliArgumentParser extends CliArgumentParse
       'specify a list of tags to filter the tests by. Negate tags with ~ to exclude all scenarios with that tag',
       val => (val ? val.split(',') : val)
     );
+
+    this.program.option(
+      '--param-type-registry-file <file path>',
+      'Relative path to a file that exports a "cucumberExpressions.ParameterTypeRegistry" object'
+    );
   }
 };
