@@ -1,12 +1,11 @@
-const fs = require('fs');
 const gherkin = require('gherkin');
 const Fixture = require('testcafe/lib/api/structure/fixture');
 const Test = require('testcafe/lib/api/structure/test');
 const { GeneralError } = require('testcafe/lib/errors/runtime');
 const { RUNTIME_ERRORS } = require('testcafe/lib/errors/types');
 const { supportCodeLibraryBuilder } = require('cucumber');
-const dataTable = require('cucumber/lib/models/data_table');
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
+const cucumberExpressions = require('cucumber-expressions');
 
 const getTags = () => {
   const tagsIndex = process.argv.findIndex(val => val === '--tags');
@@ -16,6 +15,20 @@ const getTags = () => {
   }
 
   return [];
+};
+
+const getParameterTypeRegistry = () => {
+  const parameterTypeRegistryIndex = process.argv.findIndex(val => val === '--param-type-registry-file');
+
+  if (parameterTypeRegistryIndex !== -1) {
+    const parameterTypeRegistryFilePath = process.argv[parameterTypeRegistryIndex + 1];
+    const absFilePath = require.resolve(parameterTypeRegistryFilePath, {
+      paths: [process.cwd()]
+    });
+    return require(absFilePath);
+  }
+
+  return new cucumberExpressions.ParameterTypeRegistry();
 };
 
 module.exports = class GherkinTestcafeCompiler {
@@ -31,9 +44,10 @@ module.exports = class GherkinTestcafeCompiler {
     this.afterAllHooks = [];
 
     this.tags = getTags();
+    this.cucumberExpressionParamRegistry = getParameterTypeRegistry();
   }
 
-  streamToArray(readableStream) {
+  _streamToArray(readableStream) {
     return new Promise((resolve, reject) => {
       const items = [];
       readableStream.on('data', items.push.bind(items));
@@ -47,7 +61,7 @@ module.exports = class GherkinTestcafeCompiler {
 
     let tests = await Promise.all(
       this.specFiles.map(async specFile => {
-        const gherkinResult = await this.streamToArray(gherkin.fromPaths([specFile]));
+        const gherkinResult = await this._streamToArray(gherkin.fromPaths([specFile]));
 
         const testFile = { filename: specFile, collectedTests: [] };
         const fixture = new Fixture(testFile);
@@ -108,6 +122,7 @@ module.exports = class GherkinTestcafeCompiler {
       require(stepFile);
     });
 
+    supportCodeLibraryBuilder.options.parameterTypeRegistry = this.cucumberExpressionParamRegistry;
     const finalizedStepDefinitions = supportCodeLibraryBuilder.finalize();
     this.afterHooks = finalizedStepDefinitions.afterTestCaseHookDefinitions;
     this.afterAllHooks = finalizedStepDefinitions.afterTestRunHookDefinitions;
@@ -160,7 +175,13 @@ module.exports = class GherkinTestcafeCompiler {
 
   _shouldRunStep(stepDefinition, step) {
     if (typeof stepDefinition.pattern === 'string') {
-      return [stepDefinition.pattern === step.text, [], step.dataTable];
+      const cucumberExpression = new cucumberExpressions.CucumberExpression(
+        stepDefinition.pattern,
+        this.cucumberExpressionParamRegistry
+      );
+
+      const matchResult = cucumberExpression.match(step.text);
+      return matchResult ? [true, matchResult.map(r => r.getValue()), step.dataTable] : [false, [], step.dataTable];
     } else if (stepDefinition.pattern instanceof RegExp) {
       const match = stepDefinition.pattern.exec(step.text);
       return [Boolean(match), match ? match.slice(1) : [], step.dataTable];
