@@ -4,6 +4,7 @@ const Test = require('testcafe/lib/api/structure/test');
 const { GeneralError } = require('testcafe/lib/errors/runtime');
 const { RUNTIME_ERRORS } = require('testcafe/lib/errors/types');
 const { supportCodeLibraryBuilder } = require('cucumber');
+const dataTable = require('cucumber/lib/models/data_table').default;
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 const cucumberExpressions = require('cucumber-expressions');
 
@@ -173,6 +174,10 @@ module.exports = class GherkinTestcafeCompiler {
     );
   }
 
+  _getCucumberDataTable(step) {
+    return step.dataTable ? new dataTable(step.dataTable) : null;
+  }
+
   _shouldRunStep(stepDefinition, step) {
     if (typeof stepDefinition.pattern === 'string') {
       const cucumberExpression = new cucumberExpressions.CucumberExpression(
@@ -181,10 +186,12 @@ module.exports = class GherkinTestcafeCompiler {
       );
 
       const matchResult = cucumberExpression.match(step.text);
-      return matchResult ? [true, matchResult.map(r => r.getValue()), step.dataTable] : [false, [], step.dataTable];
+      return matchResult
+        ? [true, matchResult.map(r => r.getValue()), this._getCucumberDataTable(step)]
+        : [false, [], this._getCucumberDataTable(step)];
     } else if (stepDefinition.pattern instanceof RegExp) {
       const match = stepDefinition.pattern.exec(step.text);
-      return [Boolean(match), match ? match.slice(1) : [], step.dataTable];
+      return [Boolean(match), match ? match.slice(1) : [], this._getCucumberDataTable(step)];
     }
 
     const stepType = step.text instanceof Object ? step.text.constructor.name : typeof step.text;
