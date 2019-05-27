@@ -57,19 +57,25 @@ Use `--help` command to see all options:
     
 All [TestCafé CLI options](https://devexpress.github.io/testcafe/documentation/using-testcafe/command-line-interface.html) are supported.
 
-Additionally, you can specify tags to run (see [Tags](#tags)):
+Additionally, you can specify:
 
-    gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG
-    
-When using more than one tag, the list needs to be comma separated:
+* tags to run (see [Tags](#tags)):
 
-    gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG1,@TAG2
+        gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG
     
-Negation of a tag (via `~`) is also possible:
+    When using more than one tag, the list needs to be comma separated:
 
-    gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG1,~@TAG2
+        gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG1,@TAG2
     
-This runs all scenarios that have `TAG1`, but not `TAG2`
+    Negation of a tag (via `~`) is also possible:
+
+        gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --tags @TAG1,~@TAG2
+    
+    This runs all scenarios that have `TAG1`, but not `TAG2`
+
+* custom parameter types, (see [Cucumber Expressions](#Cucumber%20Expressions))
+
+        gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --param-type-registry-file ./a-file-that-exports-a-parameter-type-registry.js
 
 ## Programming interface
 
@@ -124,6 +130,12 @@ Then(/an assertion takes place/, async (t) => {
     // Test code is the same as TestCafé's test function accepts.
     await t.expect(true).ok();
 });
+
+Then('use Cucumber Expressions to get {int}, {float}, {word}, {string}, etc', async (t, [intParam, floatParam, singleWordParam, stringParam]) => {
+    // You can use "Cucumber Expressions" instead of regex to get the parameters in the desired types.
+    // It's also possible to add custom parameter types if needed.
+    await t.expect(typeof intParam).eql('number');
+});
 ```
 
 <sup>2</sup> You need to install [Cucumber.js](https://github.com/cucumber/cucumber-js) as a dependency (see [Installation](#installation)).
@@ -154,7 +166,7 @@ Most notable features are:
 - Scenarios (Gherkin `scenario` keyword): Will be transformed into a [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Scenario outlines (Gherkin `scenario outline` and `examples` keywords): Will transform every example into on [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Tags/ Hooks: See [Tags](#tags) and [Hooks](#hooks).
-- Tables are not (yet) supported. See #14.
+- [Cucumber Expressions](#Cucumber%20Expressions)
 
 ### Tags
 
@@ -224,4 +236,14 @@ When steps have a data table, they are passed an object with methods that can be
   - `raw`: returns the table as a 2-D array
   - `rowsHash`: returns an object where each row corresponds to an entry (first column is the key, second column is the value)
   
-see examples section for an example  
+see examples section for an example
+
+### Cucumber Expressions
+
+Instead of using regex in your steps, you can use [Cucumber Expressions](https://cucumber.io/docs/cucumber/cucumber-expressions/) to get the parameters in the desired types.
+
+All the [Cucumber built-in parameter types](https://cucumber.io/docs/cucumber/cucumber-expressions/#parameter-types) are supported by default.
+
+It's also possible to add custom parameter types by creating a file that exports a `cucumberExpressions.ParameterTypeRegistry`, and passing this file path to the CLI with `--param-type-registry-file` or to the Programming interface with the `parameterTypeRegistryFile` method.
+
+See the examples section, and refer to the official [Cucumber Expressions](https://cucumber.io/docs/cucumber/cucumber-expressions/) documentation for more details.

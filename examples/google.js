@@ -9,8 +9,8 @@ Before('@googleHook', async () => {
   console.log('Running Google e2e test.');
 });
 
-Given("I am open Google's search page", async t => {
-  await t.navigateTo('http://www.google.com');
+Given("I open Google's search page", async t => {
+  await t.navigateTo('https://www.google.com');
 });
 
 When(/^I am typing my search request "(.+)" on Google$/, async (t, [searchRequest]) => {
@@ -27,5 +27,4 @@ Then(/^I should see that the first Google's result is "(.+)"$/, async (t, [expec
   const firstLink = Selector('#rso', t).find('a');
 
   await t.expect(firstLink.innerText).contains(expectedSearchResult);
-  console.log('testing stuff');
 });
