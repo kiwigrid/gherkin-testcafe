@@ -1,4 +1,4 @@
-const cucumberExpressions = require('cucumber-expressions');
+const { ParameterTypeRegistry, ParameterType } = require('cucumber-expressions');
 
 class Color {
   constructor(name) {
@@ -6,14 +6,14 @@ class Color {
   }
 }
 
-const registry = new cucumberExpressions.ParameterTypeRegistry();
+const registry = new ParameterTypeRegistry();
 
 registry.defineParameterType(
-  new cucumberExpressions.ParameterType(
+  new ParameterType(
     'color', // name
     /red|blue|yellow/, // regexp
     Color, // type
-    s => new Color(s) // transformer function
+    name => new Color(name) // transformer function
   )
 );
 
