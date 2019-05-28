@@ -73,7 +73,7 @@ Additionally, you can specify:
     
     This runs all scenarios that have `TAG1`, but not `TAG2`
 
-* custom parameter types, (see [Cucumber Expressions](#Cucumber%20Expressions))
+* custom parameter types, (see [Cucumber Expressions](#cucumber-expressions))
 
         gherkin-testcafe firefox tests/**/*.js tests/**/*.feature --param-type-registry-file ./a-file-that-exports-a-parameter-type-registry.js
 
@@ -166,7 +166,7 @@ Most notable features are:
 - Scenarios (Gherkin `scenario` keyword): Will be transformed into a [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Scenario outlines (Gherkin `scenario outline` and `examples` keywords): Will transform every example into on [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Tags/ Hooks: See [Tags](#tags) and [Hooks](#hooks).
-- [Cucumber Expressions](#Cucumber%20Expressions)
+- [Cucumber Expressions](#cucumber-expressions)
 
 ### Tags
 
@@ -185,6 +185,55 @@ Examples:
 ```
 
 __Note:__ Do not set `--tags` CLI parameter when running tests through the programming interface as it is internally used to pass the selected tags to the gherkin compiler.
+
+### Cucumber Expressions
+
+Besides using Regular Expressions, you can also use [Cucumber Expressions](https://cucumber.io/docs/cucumber/cucumber-expressions/) in your steps, and have support for [Optional text](https://cucumber.io/docs/cucumber/cucumber-expressions/#optional-text), [Alternative text](https://cucumber.io/docs/cucumber/cucumber-expressions/#alternative-text) and getting parameters in their desired types. The [Cucumber built-in parameter types](https://cucumber.io/docs/cucumber/cucumber-expressions/#parameter-types) are supported by default.
+
+It's also possible to add custom parameter types by creating a file that exports a `cucumberExpressions.ParameterTypeRegistry`, and passing this file's path to the CLI with `--param-type-registry-file` or to the Programming interface with the `parameterTypeRegistryFile` method.
+
+Example:
+
+1. Create a _ParameterTypeRegistry_ (e.g. _myCustomParamRegistry.js_):
+
+        const { ParameterTypeRegistry, ParameterType } = require('cucumber-expressions');
+
+        class Color {
+            constructor(name) {
+                this.name = `${name} color`;
+            }
+        }
+
+        const registry = new ParameterTypeRegistry();
+
+        registry.defineParameterType(
+            new ParameterType(
+                'color', // name of the parameter
+                /red|blue|yellow/, // regexp used to match
+                Color, // the parameter's type
+                name => new Color(name) // transformer function
+            )
+        );
+
+        module.exports = registry;
+
+2. Use it in a step:
+        
+        When I am searching for the blue color on Google
+
+3. Retrieve the value in the step implementation:
+
+        When('I am searching for the {color} color on Google', async (t, [color]) => {
+            console.log(color.name); // blue color
+        });
+
+4. Configure the _runner_ to use your custom _ParameterTypeRegistry_:
+
+        runner.parameterTypeRegistryFile(require.resolve('./myCustomParamRegistry.js'))
+
+    __Note:__ Do not set `--param-type-registry-file` CLI parameter when running tests through the programming interface as it is internally used to pass the path of the _ParameterTypeRegistry_ file to the gherkin compiler.
+
+Please refer to the examples folder, and the official [Cucumber Expressions](https://cucumber.io/docs/cucumber/cucumber-expressions/) documentation for more details.
 
 ### Hooks
 
@@ -237,13 +286,3 @@ When steps have a data table, they are passed an object with methods that can be
   - `rowsHash`: returns an object where each row corresponds to an entry (first column is the key, second column is the value)
   
 see examples section for an example
-
-### Cucumber Expressions
-
-Instead of using regex in your steps, you can use [Cucumber Expressions](https://cucumber.io/docs/cucumber/cucumber-expressions/) to get the parameters in the desired types.
-
-All the [Cucumber built-in parameter types](https://cucumber.io/docs/cucumber/cucumber-expressions/#parameter-types) are supported by default.
-
-It's also possible to add custom parameter types by creating a file that exports a `cucumberExpressions.ParameterTypeRegistry`, and passing this file path to the CLI with `--param-type-registry-file` or to the Programming interface with the `parameterTypeRegistryFile` method.
-
-See the examples section, and refer to the official [Cucumber Expressions](https://cucumber.io/docs/cucumber/cucumber-expressions/) documentation for more details.

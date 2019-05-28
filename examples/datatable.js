@@ -15,12 +15,12 @@ When('I click some checkboxes', async (t, [], table) => {
   }
 });
 
-Then('The amount of selected checkboxes is {int}', async (t, [amount]) => {
+Then(/^The amount of selected checkboxes is "(.+)"$/, async (t, [amount]) => {
   const selectedCheckboxes = Selector('input[type="checkbox"]').filter(checkbox =>
     Boolean(checkbox && checkbox.checked)
   );
 
   const checkedCount = await selectedCheckboxes.count;
 
-  await t.expect(checkedCount).eql(amount);
+  await t.expect(checkedCount).eql(Number(amount));
 });
