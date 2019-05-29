@@ -196,40 +196,46 @@ Example:
 
 1. Create a _ParameterTypeRegistry_ (e.g. _myCustomParamRegistry.js_):
 
-        const { ParameterTypeRegistry, ParameterType } = require('cucumber-expressions');
+    ```js
+    const { ParameterTypeRegistry, ParameterType } = require('cucumber-expressions');
 
-        class Color {
-            constructor(name) {
-                this.name = `${name} color`;
-            }
+    class Color {
+        constructor(name) {
+            this.name = `${name} color`;
         }
+    }
 
-        const registry = new ParameterTypeRegistry();
+    const registry = new ParameterTypeRegistry();
 
-        registry.defineParameterType(
-            new ParameterType(
-                'color', // name of the parameter
-                /red|blue|yellow/, // regexp used to match
-                Color, // the parameter's type
-                name => new Color(name) // transformer function
-            )
-        );
+    registry.defineParameterType(
+        new ParameterType(
+            'color', // name of the parameter
+            /red|blue|yellow/, // regexp used to match
+            Color, // the parameter's type
+            name => new Color(name) // transformer function
+        )
+    );
 
-        module.exports = registry;
+    module.exports = registry;
+    ```
 
 2. Use it in a step:
-        
+
         When I am searching for the blue color on Google
 
 3. Retrieve the value in the step implementation:
 
-        When('I am searching for the {color} color on Google', async (t, [color]) => {
-            console.log(color.name); // blue color
-        });
+    ```js
+    When('I am searching for the {color} color on Google', async (t, [color]) => {
+        console.log(color.name); // blue color
+    });
+    ```
 
 4. Configure the _runner_ to use your custom _ParameterTypeRegistry_:
 
-        runner.parameterTypeRegistryFile(require.resolve('./myCustomParamRegistry.js'))
+    ```js
+    runner.parameterTypeRegistryFile(require.resolve('./myCustomParamRegistry.js'))
+    ```
 
     __Note:__ Do not set `--param-type-registry-file` CLI parameter when running tests through the programming interface as it is internally used to pass the path of the _ParameterTypeRegistry_ file to the gherkin compiler.
 
