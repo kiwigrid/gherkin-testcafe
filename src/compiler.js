@@ -71,9 +71,8 @@ module.exports = class GherkinTestcafeCompiler {
           .before(ctx => this._runFeatureHooks(ctx, this.beforeAllHooks))
           .after(ctx => this._runFeatureHooks(ctx, this.afterAllHooks));
 
-        gherkinResult[1].gherkinDocument.feature.children.forEach(child => {
-          const scenario = child.scenario;
-          if (!this._shouldRunScenario(scenario)) {
+        gherkinResult.forEach(({ pickle: scenario }) => {
+          if (!scenario || !this._shouldRunScenario(scenario)) {
             return;
           }
 
