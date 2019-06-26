@@ -1,4 +1,4 @@
-import { DataTable } from 'cucumber';
+import { TableDefinition } from 'cucumber';
 import testcafe, { t } from 'testcafe';
 
 export * from 'testcafe';
