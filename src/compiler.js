@@ -4,7 +4,7 @@ const Test = require('testcafe/lib/api/structure/test');
 const { GeneralError } = require('testcafe/lib/errors/runtime');
 const { RUNTIME_ERRORS } = require('testcafe/lib/errors/types');
 const { supportCodeLibraryBuilder } = require('cucumber');
-const dataTable = require('cucumber/lib/models/data_table').default;
+const DataTable = require('cucumber/lib/models/data_table').default;
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 const cucumberExpressions = require('cucumber-expressions');
 
@@ -174,7 +174,9 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   _getCucumberDataTable(step) {
-    return step.dataTable ? new dataTable(step.dataTable) : null;
+    if (step.argument && step.argument.dataTable) return new DataTable(step.argument.dataTable);
+    else if (step.dataTable) return new DataTable(step.dataTable);
+    else return null;
   }
 
   _shouldRunStep(stepDefinition, step) {
