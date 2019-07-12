@@ -1,4 +1,4 @@
-import { TableDefinition } from 'cucumber';
+import { TableDefinition, World } from 'cucumber';
 import testcafe, { t } from 'testcafe';
 
 export * from 'testcafe';
@@ -16,6 +16,7 @@ declare module 'cucumber' {
   export function BeforeAll(code: GlobalHookFunction): void;
 
   export type StepFunction = (
+    this: World,
     testController: typeof t,
     parameters: any[],
     dataTable: TableDefinition | null

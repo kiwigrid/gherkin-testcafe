@@ -80,9 +80,10 @@ module.exports = class GherkinTestcafeCompiler {
           test(`Scenario: ${scenario.name}`, async t => {
             let error;
 
+            const world = {};
             try {
               for (const step of scenario.steps) {
-                await this._resolveAndRunStepDefinition(t, step);
+                await this._resolveAndRunStepDefinition(t, step, world);
               }
             } catch (e) {
               error = e;
@@ -93,8 +94,8 @@ module.exports = class GherkinTestcafeCompiler {
             }
           })
             .page('about:blank')
-            .before(t => this._runHooks(t, this._findHook(scenario, this.beforeHooks)))
-            .after(t => this._runHooks(t, this._findHook(scenario, this.afterHooks)));
+            .before(t => this._runHooks(t, this._findHook(scenario, this.beforeHooks), world))
+            .after(t => this._runHooks(t, this._findHook(scenario, this.afterHooks), world));
         });
 
         return testFile.collectedTests;
@@ -131,19 +132,22 @@ module.exports = class GherkinTestcafeCompiler {
     this.stepDefinitions = finalizedStepDefinitions.stepDefinitions;
   }
 
-  _resolveAndRunStepDefinition(testController, step) {
+  _resolveAndRunStepDefinition(testController, step, world) {
     for (const stepDefinition of this.stepDefinitions) {
       const [isMatched, parameters, table] = this._shouldRunStep(stepDefinition, step);
       if (isMatched) {
-        return this._runStep(stepDefinition.code, testController, parameters, table);
+        return this._runStep(stepDefinition.code, testController, world, parameters, table);
       }
     }
 
     throw new Error(`Step implementation missing for: ${step.text}`);
   }
 
-  _runStep(step, testController, parameters, table) {
-    const markedFn = testRunTracker.addTrackingMarkerToFunction(testController.testRun.id, step);
+  _runStep(step, testController, world, parameters, table) {
+    const stepWithWorld = function () {
+        return step.apply(world, arguments);
+    };
+    const markedFn = testRunTracker.addTrackingMarkerToFunction(testController.testRun.id, stepWithWorld);
 
     testRunTracker.ensureEnabled();
 
@@ -154,9 +158,9 @@ module.exports = class GherkinTestcafeCompiler {
     return hooks.filter(hook => !hook.options.tags || scenario.tags.find(tag => tag.name === hook.options.tags));
   }
 
-  async _runHooks(testController, hooks) {
+  async _runHooks(testController, hooks, world) {
     for (const hook of hooks) {
-      await this._runStep(hook.code, testController, []);
+      await this._runStep(hook.code, testController, world, []);
     }
   }
 
