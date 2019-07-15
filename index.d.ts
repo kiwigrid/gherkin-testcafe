@@ -6,7 +6,7 @@ export default testcafe;
 
 declare module 'cucumber' {
   export type HookFunction = (testController: typeof t) => Promise<void>;
-  export type GlobalHookFunction = (fixtureContext: { [key: string]: string }) => Promise<void>;
+  export type GlobalHookFunction = (fixtureContext: { [key: string]: any }) => Promise<void>;
 
   export function After(code: HookFunction): void;
   export function After(options: string, code: HookFunction): void;
