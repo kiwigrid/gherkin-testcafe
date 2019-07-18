@@ -35,7 +35,7 @@
   "scripts": {
     "prettier": "prettier --write 'src/**/*.js' README.md main.js index.d.ts",
     "prettier-check": "prettier --list-different 'src/**/*.{js,yaml,yml,json,md}'",
-    "google-example": "node main.js chromium ./examples/google.js ./examples/google.feature",
+    "google-example": "node main.js chrome ./examples/google.js ./examples/google.feature",
     "datatable-example": "node main.js chrome ./examples/datatable.js ./examples/datatable.feature",
     "custom-param-type-example": "node main.js chrome ./examples/google.js ./examples/custom-param-type.js ./examples/custom-param-type.feature --param-type-registry-file ./examples/custom-param-type-registry.js"
   },
