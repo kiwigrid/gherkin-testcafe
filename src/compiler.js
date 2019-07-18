@@ -67,7 +67,20 @@ module.exports = class GherkinTestcafeCompiler {
         const testFile = { filename: specFile, collectedTests: [] };
         const fixture = new Fixture(testFile);
 
-        fixture(`Feature: ${gherkinResult[1].gherkinDocument.feature.name}`)
+        const { gherkinDocument } = gherkinResult[1];
+
+        if (!gherkinDocument) {
+          throw new Error(
+            [
+              'Failed to parse feature file ' + specFile,
+              ...gherkinResult
+                .filter(({ attachment }) => Boolean(attachment))
+                .map(({ attachment }) => attachment.source.uri + attachment.data)
+            ].join('\n')
+          );
+        }
+
+        fixture(`Feature: ${gherkinDocument.feature.name}`)
           .before(ctx => this._runFeatureHooks(ctx, this.beforeAllHooks))
           .after(ctx => this._runFeatureHooks(ctx, this.afterAllHooks));
 
