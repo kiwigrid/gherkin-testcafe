@@ -164,6 +164,7 @@ Most notable features are:
 
 - Features (Gherkin `feature` keyword): Will be transformed into a [TestCafé fixture](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#fixtures).
 - Scenarios (Gherkin `scenario` keyword): Will be transformed into a [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
+- Backgrounds (Gherkin `background` keyword): Background steps are prepended to Scenario/ Scenario outline steps. `Before` hooks are run before background steps. 
 - Scenario outlines (Gherkin `scenario outline` and `examples` keywords): Will transform every example into on [TestCafé test](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#tests).
 - Tags/ Hooks: See [Tags](#tags) and [Hooks](#hooks).
 - [Cucumber Expressions](#cucumber-expressions)
