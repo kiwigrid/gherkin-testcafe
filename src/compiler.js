@@ -7,6 +7,11 @@ const { supportCodeLibraryBuilder } = require('cucumber');
 const DataTable = require('cucumber/lib/models/data_table').default;
 const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 const cucumberExpressions = require('cucumber-expressions');
+const TestcafeESNextCompiler = require('testcafe/lib/compiler/test-file/formats/es-next/compiler');
+const TestcafeTypescriptCompiler = require('testcafe/lib/compiler/test-file/formats/typescript/compiler');
+const APIBasedTestFileCompilerBase = require('testcafe/lib/compiler/test-file/api-based');
+const { readFileSync } = require('fs');
+const { resolve } = require('path');
 
 const getTags = () => {
   const tagsIndex = process.argv.findIndex(val => val === '--tags');
@@ -33,9 +38,9 @@ const getParameterTypeRegistry = () => {
 };
 
 module.exports = class GherkinTestcafeCompiler {
-  constructor(sources) {
-    this.stepFiles = sources.filter(source => source.substr(-3) === '.js');
-    this.specFiles = sources.filter(source => source.substr(-8) === '.feature');
+  constructor(sources, compilerOptions) {
+    this.stepFiles = sources.filter(source => source.endsWith('.js') || source.endsWith('.ts'));
+    this.specFiles = sources.filter(source => source.endsWith('.feature'));
 
     this.stepDefinitions = [];
 
@@ -46,6 +51,10 @@ module.exports = class GherkinTestcafeCompiler {
 
     this.tags = getTags();
     this.cucumberExpressionParamRegistry = getParameterTypeRegistry();
+    this.externalCompilers = [
+      new TestcafeESNextCompiler(compilerOptions),
+      new TestcafeTypescriptCompiler(compilerOptions)
+    ];
   }
 
   _streamToArray(readableStream) {
@@ -58,7 +67,7 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   async getTests() {
-    this._loadStepDefinitions();
+    await this._loadStepDefinitions();
 
     let tests = await Promise.all(
       this.specFiles.map(async specFile => {
@@ -127,13 +136,26 @@ module.exports = class GherkinTestcafeCompiler {
     return tests;
   }
 
-  _loadStepDefinitions() {
+  async _loadStepDefinitions() {
     supportCodeLibraryBuilder.reset(process.cwd());
-    this.stepFiles.forEach(stepFile => {
-      delete require.cache[require.resolve(stepFile)];
 
-      require(stepFile);
+    const compilerResult = this.externalCompilers.map(async externalCompiler => {
+      const testFiles = this.stepFiles.filter(filename => filename.endsWith(externalCompiler.getSupportedExtension()));
+
+      const compiledCode = await externalCompiler.precompile(
+        testFiles.map(filename => {
+          const code = readFileSync(filename, 'utf-8');
+
+          return { code, filename };
+        })
+      );
+
+      testFiles.forEach((filename, index) => {
+        externalCompiler.execute(compiledCode[index], filename);
+      });
     });
+
+    await Promise.all(compilerResult);
 
     supportCodeLibraryBuilder.options.parameterTypeRegistry = this.cucumberExpressionParamRegistry;
     const finalizedStepDefinitions = supportCodeLibraryBuilder.finalize();
@@ -230,7 +252,7 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   static getSupportedTestFileExtensions() {
-    return ['.js', '.feature'];
+    return ['.js', '.ts', '.feature'];
   }
 
   static cleanUp() {}

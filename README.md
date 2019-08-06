@@ -109,7 +109,7 @@ You can use all [other runner methods](https://devexpress.github.io/testcafe/doc
 To write step definitions, import `Given`, `When` and/ or `Then` from `cucumber`<sup>2</sup>:
 
 ```js
-const { Given, When, Then } = require('cucumber');
+import { Given, When, Then } from 'cucumber';
 
 Given(/some precondition/, async (t) => {
     // The first argument of Given, When and Then will be a regex that matches the step.
@@ -198,7 +198,7 @@ Example:
 1. Create a _ParameterTypeRegistry_ (e.g. _myCustomParamRegistry.js_):
 
     ```js
-    const { ParameterTypeRegistry, ParameterType } = require('cucumber-expressions');
+    import { ParameterTypeRegistry, ParameterType } from 'cucumber-expressions';
 
     class Color {
         constructor(name) {
@@ -257,7 +257,7 @@ Before/ After hooks run before or after each test (i.e. scenario).
 Each hook implementation gets TestCafé's test controller object as a parameter.
 
 ```js
-const { Before } = require('cucumber');
+import { Before } from 'cucumber';
 
 Before('@tag1', async (t) => {
     // do something
@@ -274,7 +274,7 @@ Each hook implementation gets TestCafé's fixture context.
 See [Sharing Variables Between Fixture Hooks and Test Code](https://devexpress.github.io/testcafe/documentation/test-api/test-code-structure.html#sharing-variables-between-fixture-hooks-and-test-code) documentation for more details.
 
 ```js
-const { BeforeAll } = require('cucumber');
+import { BeforeAll } from 'cucumber';
 
 BeforeAll(async (ctx) => {
     // do something with the context
@@ -293,3 +293,15 @@ When steps have a data table, they are passed an object with methods that can be
   - `rowsHash`: returns an object where each row corresponds to an entry (first column is the key, second column is the value)
   
 see examples section for an example
+
+## Using typescript and ESnext features
+
+With `gherkin-testcafe`, you can use Typescript and ESnext features (like es module import statements) the same way you can use them in regular TestCafé tests.
+In fact, it actually uses TestCafé's compilers to compile Typescript and ESNext files.
+
+Please refer to [TestCafé's Typescript support manual page](https://devexpress.github.io/testcafe/documentation/test-api/typescript-support.html) to see how you can customize compiler options and which compiler options are used by default.
+
+Please make sure __not__ to install `@types/cucumber`!
+`gherkin-testcafe` will provide types for the `cucumber` module.
+
+Unfortunately, you cannot define your custom parameter types registry file in typescript or with ESnext features.

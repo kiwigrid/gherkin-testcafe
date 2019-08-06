@@ -1,5 +1,5 @@
-const { When, Then } = require('cucumber');
-const { Selector: NativeSelector } = require('testcafe');
+import { When, Then } from 'cucumber';
+import { Selector as NativeSelector } from 'testcafe';
 
 const Selector = (input, t) => {
   return NativeSelector(input).with({ boundTestRun: t });
