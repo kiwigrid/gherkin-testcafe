@@ -40,7 +40,7 @@
     "custom-param-type-example": "node main.js chrome examples/google.ts ./examples/custom-param-type.js ./examples/custom-param-type.feature --param-type-registry-file ./examples/custom-param-type-registry.js"
   },
   "dependencies": {
-    "gherkin": "^7.0.3"
+    "gherkin": "^8.1.1"
   },
   "peerDependencies": {
     "cucumber": "^5.1.0",
