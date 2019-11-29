@@ -12,6 +12,12 @@ module.exports = class GherkinTestcafeRunner extends TestcafeRunner {
   tags(...tags) {
     if (this.apiMethodWasCalled.tags) throw new GeneralError(RUNTIME_ERRORS.multipleAPIMethodCallForbidden, 'tags');
 
+    // remove tags from previous runs (if starting multiple runs in a row in the same process)
+    const tagsIndex = process.argv.findIndex(val => val === '--tags');
+    if (tagsIndex !== -1) {
+      process.argv.splice(tagsIndex, 2);
+    }
+
     tags = this._prepareArrayParameter(tags);
 
     process.argv.push('--tags', tags.join(','));
