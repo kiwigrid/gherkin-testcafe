@@ -9,15 +9,16 @@ const testRunTracker = require('testcafe/lib/api/test-run-tracker');
 const cucumberExpressions = require('cucumber-expressions');
 const TestcafeESNextCompiler = require('testcafe/lib/compiler/test-file/formats/es-next/compiler');
 const TestcafeTypescriptCompiler = require('testcafe/lib/compiler/test-file/formats/typescript/compiler');
-const APIBasedTestFileCompilerBase = require('testcafe/lib/compiler/test-file/api-based');
 const { readFileSync } = require('fs');
-const { resolve } = require('path');
+
+const AND_SEPARATOR = ' and ';
 
 const getTags = () => {
   const tagsIndex = process.argv.findIndex(val => val === '--tags');
-
   if (tagsIndex !== -1) {
-    return process.argv[tagsIndex + 1].split(',');
+    return process.argv[tagsIndex + 1]
+      .split(',')
+      .map(tag => (tag.includes(AND_SEPARATOR) ? tag.split(AND_SEPARATOR) : tag));
   }
 
   return [];
@@ -236,15 +237,34 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   _getIncludingTags(tags) {
-    return tags.filter(tag => !tag.startsWith('~'));
+    const filteredSubArrays = tags.map(tag =>
+      Array.isArray(tag) ? tag.filter(subtag => !subtag.startsWith('~')) : tag
+    );
+
+    return filteredSubArrays.filter(tag => (Array.isArray(tag) ? true : !tag.startsWith('~')));
   }
 
   _getExcludingTags(tags) {
-    return tags.filter(tag => tag.startsWith('~')).map(tag => tag.slice(1));
+    const filteredSubArrays = tags.map(tag =>
+      Array.isArray(tag) ? tag.filter(subtag => subtag.startsWith('~')).map(subtag => subtag.slice(1)) : tag
+    );
+
+    return filteredSubArrays
+      .filter(tag => (Array.isArray(tag) ? true : tag.startsWith('~')))
+      .map(tag => (Array.isArray(tag) ? tag : tag.slice(1)));
   }
 
   _scenarioHasAnyOfTheTags(scenario, tags) {
-    return !tags.length || tags.some(tag => scenario.tags.map(t => t.name).includes(tag));
+    const scenarioTagsList = scenario.tags.map(tag => tag.name);
+
+    return (
+      !tags.length ||
+      tags.some(tag =>
+        Array.isArray(tag) && tag.length > 0
+          ? tag.every(subtag => scenarioTagsList.includes(subtag))
+          : scenarioTagsList.includes(tag)
+      )
+    );
   }
 
   _scenarioLacksTags(scenario, tags) {
