@@ -237,21 +237,13 @@ module.exports = class GherkinTestcafeCompiler {
   }
 
   _getIncludingTags(tags) {
-    const filteredSubArrays = tags.map(tag =>
-      Array.isArray(tag) ? tag.filter(subtag => !subtag.startsWith('~')) : tag
-    );
-
-    return filteredSubArrays.filter(tag => (Array.isArray(tag) ? true : !tag.startsWith('~')));
+    return tags.filter(tag => (Array.isArray(tag) ? true : !tag.startsWith('~')));
   }
 
   _getExcludingTags(tags) {
-    const filteredSubArrays = tags.map(tag =>
-      Array.isArray(tag) ? tag.filter(subtag => subtag.startsWith('~')).map(subtag => subtag.slice(1)) : tag
-    );
-
-    return filteredSubArrays
-      .filter(tag => (Array.isArray(tag) ? true : tag.startsWith('~')))
-      .map(tag => (Array.isArray(tag) ? tag : tag.slice(1)));
+    return tags
+      .filter(tag => (Array.isArray(tag) ? false : tag.startsWith('~')))
+      .map(tag => (!Array.isArray(tag) && tag.startsWith('~') ? tag.slice(1) : tag));
   }
 
   _scenarioHasAnyOfTheTags(scenario, tags) {
@@ -259,16 +251,22 @@ module.exports = class GherkinTestcafeCompiler {
 
     return (
       !tags.length ||
-      tags.some(tag =>
-        Array.isArray(tag) && tag.length > 0
-          ? tag.every(subtag => scenarioTagsList.includes(subtag))
-          : scenarioTagsList.includes(tag)
-      )
+      tags.some(tag => {
+        return Array.isArray(tag) ? this._scenarioHasAllOfTheTags(scenario, tag) : scenarioTagsList.includes(tag);
+      })
     );
   }
 
   _scenarioLacksTags(scenario, tags) {
     return !tags.length || !this._scenarioHasAnyOfTheTags(scenario, tags);
+  }
+
+  _scenarioHasAllOfTheTags(scenario, tags) {
+    const scenarioTagsList = scenario.tags.map(tag => tag.name);
+
+    return tags.every(tag =>
+      tag.startsWith('~') ? !scenarioTagsList.includes(tag.slice(1)) : scenarioTagsList.includes(tag)
+    );
   }
 
   static getSupportedTestFileExtensions() {
