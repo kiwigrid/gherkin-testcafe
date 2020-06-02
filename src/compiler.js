@@ -141,7 +141,22 @@ module.exports = class GherkinTestcafeCompiler {
     supportCodeLibraryBuilder.reset(process.cwd());
 
     const compilerResult = this.externalCompilers.map(async externalCompiler => {
-      const testFiles = this.stepFiles.filter(filename => filename.endsWith(externalCompiler.getSupportedExtension()));
+      const testFiles = this.stepFiles.filter(filename => {
+
+		  let supportedExtensions = externalCompiler.getSupportedExtension();
+
+		  if (!Array.isArray(supportedExtensions)) {
+		  	supportedExtensions = [supportedExtensions];
+		  }
+
+		  for (const extension of supportedExtensions) {
+		  	if (filename.endsWith(extension)) {
+				return true;
+			}
+		  }
+
+		  return false;
+	  });
 
       const compiledCode = await externalCompiler.precompile(
         testFiles.map(filename => {

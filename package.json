@@ -50,6 +50,6 @@
   "devDependencies": {
     "cucumber": "^5.1.0",
     "prettier": "^1.17.1",
-    "testcafe": "^1.3.3"
+    "testcafe": "^1.8.6"
   }
 }
