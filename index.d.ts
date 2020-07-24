@@ -35,7 +35,8 @@ declare module 'cucumber' {
   export type StepFunction = (
     testController: typeof t,
     parameters: any[],
-    dataTable: TableDefinition | null
+    dataTable: TableDefinition | null,
+    docString: string | null
   ) => Promise<void>;
 
   export function Given(pattern: RegExp | string, code: StepFunction): void;
