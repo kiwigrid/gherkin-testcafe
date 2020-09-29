@@ -184,21 +184,21 @@ module.exports = class GherkinTestcafeCompiler {
 
   _resolveAndRunStepDefinition(testController, step) {
     for (const stepDefinition of this.stepDefinitions) {
-      const [isMatched, parameters, table] = this._shouldRunStep(stepDefinition, step);
+      const [isMatched, parameters, table, docString] = this._shouldRunStep(stepDefinition, step);
       if (isMatched) {
-        return this._runStep(stepDefinition.code, testController, parameters, table);
+        return this._runStep(stepDefinition.code, testController, parameters, table, docString);
       }
     }
 
     throw new Error(`Step implementation missing for: ${step.text}`);
   }
 
-  _runStep(step, testController, parameters, table) {
+  _runStep(step, testController, parameters, table, docString) {
     const markedFn = testRunTracker.addTrackingMarkerToFunction(testController.testRun.id, step);
 
     testRunTracker.ensureEnabled();
 
-    return markedFn(testController, parameters, table);
+    return markedFn(testController, parameters, table, docString);
   }
 
   _findHook(scenario, hooks) {
@@ -224,6 +224,12 @@ module.exports = class GherkinTestcafeCompiler {
     );
   }
 
+  _getCucumberDocString(step) {
+    if (step.argument && step.argument.docString) return step.argument.docString.content;
+    else if (step.docString) return step.docString.content;
+    else return null;
+  }
+
   _getCucumberDataTable(step) {
     if (step.argument && step.argument.dataTable) return new DataTable(step.argument.dataTable);
     else if (step.dataTable) return new DataTable(step.dataTable);
@@ -239,11 +245,12 @@ module.exports = class GherkinTestcafeCompiler {
 
       const matchResult = cucumberExpression.match(step.text);
       return matchResult
-        ? [true, matchResult.map(r => r.getValue()), this._getCucumberDataTable(step)]
-        : [false, [], this._getCucumberDataTable(step)];
+        ? [true, matchResult.map(r => r.getValue()), this._getCucumberDataTable(step), this._getCucumberDocString(step)]
+        : [false, [], this._getCucumberDataTable(step), this._getCucumberDocString(step)];
     } else if (stepDefinition.pattern instanceof RegExp) {
       const match = stepDefinition.pattern.exec(step.text);
-      return [Boolean(match), match ? match.slice(1) : [], this._getCucumberDataTable(step)];
+      return [Boolean(match), match ? match.slice(1) : [], this._getCucumberDataTable(step),
+        this._getCucumberDocString(step)];
     }
 
     const stepType = step.text instanceof Object ? step.text.constructor.name : typeof step.text;
