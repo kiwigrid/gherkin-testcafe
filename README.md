@@ -1,3 +1,9 @@
+# This project has been moved
+
+The project has been moved to [Arthy000/gherkin-testcafe](https://github.com/Arthy000/gherkin-testcafe).
+
+Thank you @Arthy000 for taking care of the project!
+
 # gherkin-testcafe
 
 > Run testcafe tests with gherkin syntax
